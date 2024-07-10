@@ -1,0 +1,69 @@
+<odoo>
+  <data>
+
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.contrato_action_window">
+      <field name="name">Cadastro de Contrato</field>
+      <field name="res_model">bthinker.contrato</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+              Cadastre o primeiro contrato!
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.contrato_list">
+      <field name="name">bthinker.contrato.list</field>
+      <field name="model">bthinker.contrato</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="partner_id"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.contrato_form">
+      <field name="name">bthinker.contrato.form</field>
+      <field name="model">bthinker.contrato</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Contrato">
+          <header>
+            <field name="state" widget="statusbar" options="{'clickable': True, 'fold_field': 'fold'}" />
+          </header>
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>
+                <field name="partner_id"/>
+              </group>              
+            </group>
+            <notebook>
+              <page string="Usuários">
+                <field name="usuario_ids">
+                  <tree string="Usuários do Contrato" delete="false" create="false" edit="false" editable="top">
+                    <field name="name"/>
+                    <field name="email"/>
+                    <field name="mobile"/>
+                    <field name="phone"/>
+                    <field name="vat"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Portas">
+                <field name="porta_ids">
+                  <tree string="Portas do Contrato" delete="true" create="true" edit="true" editable="top">
+                    <field name="nome"/>
+                    <field name="guid"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+
+  </data>
+</odoo>

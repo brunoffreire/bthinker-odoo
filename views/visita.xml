@@ -1,0 +1,50 @@
+<odoo>
+  <data>
+
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.visita_action_window">
+      <field name="name">Cadastro de Visita</field>
+      <field name="res_model">bthinker.visita</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+              Cadastre a primeira visita!
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.visita_list">
+      <field name="name">bthinker.visita.list</field>
+      <field name="model">bthinker.visita</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="partner_id"/>
+          <field name="data_inicio"/>
+          <field name="data_fim"/>
+          <field name="usa_uma_vez"/>
+          <field name="chave_id"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.visita_form">
+      <field name="name">bthinker.visita.form</field>
+      <field name="model">bthinker.visita</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Visita">
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>
+                <field name="partner_id"/>
+          <field name="data_inicio"/>
+          <field name="data_fim"/>
+          <field name="usa_uma_vez"/>
+          <field name="chave_id"/>
+              </group>              
+            </group>            
+          </sheet>          
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>

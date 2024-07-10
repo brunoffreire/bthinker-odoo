@@ -1,0 +1,15 @@
+<odoo>
+	<data>
+
+		<!-- top level menu: no parent -->
+		<menuitem id="bthinker_main_menu" name="QRDoor"/>
+
+		<menuitem id="bthinker_contrato_menu" name="Contratos" parent="bthinker_main_menu" action="bthinker_qrdoor.contrato_action_window" sequence="1"/>
+		<menuitem id="bthinker_usuario_menu" name="Usuários" parent="bthinker_main_menu" action="bthinker_qrdoor.usuario_action_window" sequence="2"/>
+		<menuitem id="bthinker_chave_menu" name="Chaves" parent="bthinker_main_menu" action="bthinker_qrdoor.chave_action_window" sequence="3"/>
+		<menuitem id="bthinker_porta_menu" name="Portas" parent="bthinker_main_menu" action="bthinker_qrdoor.porta_action_window" sequence="4"/>
+		<menuitem id="bthinker_visita_menu" name="Visitas" parent="bthinker_main_menu" action="bthinker_qrdoor.visita_action_window" sequence="5"/>
+
+
+	</data>
+</odoo>

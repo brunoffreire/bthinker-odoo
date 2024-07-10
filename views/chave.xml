@@ -1,0 +1,47 @@
+<odoo>
+  <data>
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.chave_action_window">
+      <field name="name">Cadastro de Chave</field>
+      <field name="res_model">bthinker.chave</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+Cadastre a primeira chave!
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.chave_list">
+      <field name="name">bthinker.chave.list</field>
+      <field name="model">bthinker.chave</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="nome"/>
+          <field name="tipo"/>
+          <field name="guid"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.chave_form">
+      <field name="name">bthinker.chave.form</field>
+      <field name="model">bthinker.chave</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Chave">
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>
+                
+                <field name="tipo"/>
+                <field name="guid"/>
+                <field name="usuario_id"  attrs="{'invisible':[('tipo', '!=', 'user')]}"/>
+                <field name="visita_id"  attrs="{'invisible':[('tipo', '!=', 'visitor')]}"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>

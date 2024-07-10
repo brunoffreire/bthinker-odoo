@@ -1,0 +1,82 @@
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.usuario_list">
+      <field name="name">bthinker.usuario.list</field>
+      <field name="model">bthinker.usuario</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="nome"/>
+          <field name="username"/>
+          <field name="email"/>
+          <field name="celular"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.usuario_form">
+      <field name="name">bthinker.usuario.form</field>
+      <field name="model">bthinker.usuario</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Usuario">
+          <header>
+            <button name="action_send_enroll_mail" string="Enviar e-mail de cadastro" type="object"  class="oe_highlight" />
+            <field name="state" widget="statusbar" options="{'clickable': True, 'fold_field': 'fold'}" />
+          </header>
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>
+                <field name="nome"/>
+                <field name="username"/>
+                <field name="email"/>
+                <field name="celular"/>
+                <field name="hash_validacao"/>
+                <field name="link_validacao"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.usuario_action_window">
+      <field name="name">Cadastro de Usuário</field>
+      <field name="res_model">bthinker.usuario</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+        (0, 0, {'view_mode': 'tree', 'view_id': ref('bthinker_qrdoor.usuario_list')}),
+        (0, 0, {'view_mode': 'form', 'view_id': ref('bthinker_qrdoor.usuario_form')})]"/>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+              Cadastre o primeiro usuario!
+        </p>
+      </field>
+    </record>
+
+    <record model="mail.template" id="bthinker_qrdoor.user_enroll_mail_template">
+      <field name="name">E-Mail de Cadastro de Usuário</field>
+      <field name="model_id" ref="bthinker_qrdoor.model_bthinker_usuario"/>
+      <field name="email_from">{{ object.email }}</field>
+      <field name="email_to">{{ object.email }}</field>
+      <field name="subject">Confirmação de Cadastro</field>
+      <field name="body_html" type="html">
+        <div style="margin: 0px; padding: 0px;">
+          <div style="margin: 0px; padding: 0px;">
+              Olá <t t-out="object.nome"/>,
+              <br/><br/>
+              Para finalizar o seu cadastro e habilitar sua conta, clique no link abaixo:
+              <br/>
+              <a href="{{ object.link }}"><t t-out="object.nome"/></a>
+              <br/><br/>
+              Atenciosamente,
+              <br/>
+              Equipe B-Thinker.
+        </div>
+      </div>
+    </field>
+  </record>
+
+</data>
+</odoo>

@@ -1,0 +1,46 @@
+<odoo>
+  <data>
+
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.porta_action_window">
+      <field name="name">Cadastro de Porta</field>
+      <field name="res_model">bthinker.porta</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+              Cadastre a primeira porta!
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.porta_list">
+      <field name="name">bthinker.porta.list</field>
+      <field name="model">bthinker.porta</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="contrato_id"/>
+          <field name="nome"/>
+          <field name="guid"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.porta_form">
+      <field name="name">bthinker.porta.form</field>
+      <field name="model">bthinker.porta</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Porta">
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>
+                <field name="contrato_id"/>                
+                <field name="nome"/>                
+                <field name="guid"/>
+              </group>              
+            </group>            
+          </sheet>          
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>

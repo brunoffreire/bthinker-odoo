@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bthinker_chave,bthinker.chave,model_bthinker_chave,bthinker_qrdoor.qrdoor_user,1,1,1,1
+access_bthinker_contrato,bthinker.contrato,model_bthinker_contrato,bthinker_qrdoor.qrdoor_user,1,1,1,1
+access_bthinker_porta,bthinker.porta,model_bthinker_porta,bthinker_qrdoor.qrdoor_user,1,1,1,1
+access_bthinker_visita,bthinker.visita,model_bthinker_visita,bthinker_qrdoor.qrdoor_user,1,1,1,1
+access_bthinker_usuario,bthinker.usuario,model_bthinker_usuario,bthinker_qrdoor.qrdoor_user,1,1,1,1
