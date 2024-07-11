@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_validate" name="Pagina de validação de Cadastro">
+		<t t-call="bthinker_qrdoor.page_layout">
+			<t t-set="portal_body">
+				<div class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+					<br/>
+					<div class="align-items-center justify-content-center">
+						<div t-if="errno == 0" class="text-success">
+							<t t-esc="message"/>
+						</div>
+						<div t-if="errno == 1" class="text-danger">
+							<t t-esc="message"/>
+						</div>
+					</div>
+					<br/>
+					<a t-att-href="login_url" class="link">Voltar para a página de login.</a>
+				</div>
+			</t>
+		</t>
+	</template>
+</odoo>

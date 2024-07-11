@@ -12,7 +12,8 @@ class visita(models.Model):
 	_name = "bthinker.visita"
 	_description = "Visita"
 	
-	partner_id = fields.Many2one('res.partner',  string="Criado por", required=True)
+	usuario_id = fields.Many2one('bthinker.usuario',  string="Criado por", required=True)
+	nome_visitante = fields.Char(string="Visitante", required=True)
 	data_inicio = fields.Datetime(string="Início", help="Acesso será permitido somente após esse horário.", required=True)
 	data_fim = fields.Datetime(string="Fim", help="Acessos será permitido somente até esse horário", required=True)
 	usa_uma_vez = fields.Boolean(string="Expira após uso", help="Marcando essa opção, a chave será invalidada assim que utilizada.")

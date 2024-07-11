@@ -2,6 +2,6 @@
 from . import cnpj
 from . import cpf
 from . import viacep
-from . import AES
+from . import StringUtils
 from . import qrcode
 from . import email

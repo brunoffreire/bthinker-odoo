@@ -2,8 +2,10 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
+from odoo.addons.bthinker_qrdoor.util.StringUtils import StringUtils
 
 import uuid
+import hashlib
 import logging
 _logger = logging.getLogger(__name__) 
 
@@ -19,7 +21,6 @@ class usuario(models.Model):
 		'Nome de usuário não disponível.')
 		]
 			
-
 	nome = fields.Char(string="Nome Completo")
 	username = fields.Char(string="Nome de usuário")
 	senha = fields.Char(string="Senha")
@@ -33,6 +34,14 @@ class usuario(models.Model):
 
 	hash_validacao = fields.Char(string="Hash para validação de e-mail")
 	link_validacao = fields.Char(string='Link de validação', compute='compute_link')
+	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="set null", readonly=True)
+
+	def name_get(self):
+		result = []
+		for record in self:
+			name = "{}".format(record.nome)
+			result.append((record.id, name))
+		return result
 
 	@api.model
 	def default_get(self, fields_list):
@@ -41,16 +50,41 @@ class usuario(models.Model):
 		res = super(usuario, self).default_get(fields_list)		
 		res.update({'hash_validacao': uuid1+uuid4})
 		return res
+
+	@api.model
+	def create(self, vals):		
+		if 'senha' in vals:
+			vals['senha'] = StringUtils.str2md5(vals['senha'])
+
+		rec = super(usuario, self).create(vals)		
+		return rec
+	
+
+	def write(self, vals):
+		if 'senha' in vals:
+			vals['senha'] = StringUtils.str2md5(vals['senha'])
+
+		rec = super(usuario, self).write(vals)		
+		return rec
+	
 	
 	@api.depends('hash_validacao')
 	def compute_link(self):
-		for record in self:
+		for rec in self:
+			data = {'username':rec.username, 'hash': rec.hash_validacao}
+			strJson = StringUtils.dictToJson(data)
+			code = StringUtils.toBase64(strJson)
+			
 			url = self.env['ir.config_parameter'].get_param('web.base.url', '')
-			record.link_validacao = url + "/?code=" + record.hash_validacao
+			rec.link_validacao = url + "/virtualkey/validate?code=" + code
 
 	def action_send_enroll_mail(self):
 		template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
 		template.send_mail(self.id, force_send=True)
+
+	def send_enroll_mail(self):
+		template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
+		template.send_mail(self.id, force_send=False)
 
 	def validate_account(self):
 		

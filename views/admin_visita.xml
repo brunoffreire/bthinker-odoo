@@ -17,7 +17,8 @@
       <field name="model">bthinker.visita</field>
       <field name="arch" type="xml">
         <tree>
-          <field name="partner_id"/>
+          <field name="usuario_id"/>
+          <field name="nome_visitante"/>
           <field name="data_inicio"/>
           <field name="data_fim"/>
           <field name="usa_uma_vez"/>
@@ -35,14 +36,15 @@
             <group col="2">
               <group>
                 <separator string="Dados Gerais"/>
-                <field name="partner_id"/>
-          <field name="data_inicio"/>
-          <field name="data_fim"/>
-          <field name="usa_uma_vez"/>
-          <field name="chave_id"/>
-              </group>              
-            </group>            
-          </sheet>          
+                <field name="usuario_id"/>
+                <field name="nome_visitante"/>
+                <field name="data_inicio"/>
+                <field name="data_fim"/>
+                <field name="usa_uma_vez"/>
+                <field name="chave_id"/>
+              </group>
+            </group>
+          </sheet>
         </form>
       </field>
     </record>

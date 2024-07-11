@@ -18,4 +18,4 @@ class contrato(models.Model):
 	state = fields.Selection([
 		('inactive', 'Inativo'),
 		('active', 'Ativo'),
-	], string="Status do Contrato", tracking=True, default='inactive')
+	], string="Status do Contrato", default='inactive')

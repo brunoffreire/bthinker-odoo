@@ -10,7 +10,8 @@
           <field name="username"/>
           <field name="email"/>
           <field name="celular"/>
-          <field name="state"/>
+          <field name="state"/>          
+          <field name="chave_id"/>
         </tree>
       </field>
     </record>
@@ -32,8 +33,10 @@
                 <field name="username"/>
                 <field name="email"/>
                 <field name="celular"/>
+                <field name="senha"/>
                 <field name="hash_validacao"/>
                 <field name="link_validacao"/>
+                <field name="chave_id"/>
               </group>
             </group>
           </sheet>
@@ -68,7 +71,7 @@
               <br/><br/>
               Para finalizar o seu cadastro e habilitar sua conta, clique no link abaixo:
               <br/>
-              <a href="{{ object.link }}"><t t-out="object.nome"/></a>
+              <a t-att-href="object.link_validacao"><t t-esc="object.link_validacao"/></a>
               <br/><br/>
               Atenciosamente,
               <br/>

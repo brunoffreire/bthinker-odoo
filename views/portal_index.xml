@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_index" name="Layout de Página Pública">
+		<t t-call="bthinker_qrdoor.page_layout">
+			<t t-set="portal_body">
+				<t t-call="bthinker_qrdoor.page_top_menu" />												
+				<div class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+					<t t-call="bthinker_qrdoor.settings_button" />					
+				</div>									
+			</t>
+		</t>
+	</template>
+</odoo>

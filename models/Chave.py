@@ -26,9 +26,15 @@ class chave(models.Model):
 		('visitor', 'Chave de Visita'),
 	], string="Status da Conta", default='user', required=True)
 
-	usuario_id = fields.Many2one("bthinker.usuario", string="Usuário", ondelete="set null")
-	visita_id = fields.Many2one("bthinker.visita", string="Visita", ondelete="set null")
+	usuario_id = fields.Many2one("bthinker.usuario", string="Usuário", ondelete="set null", readonly=True)
+	visita_id = fields.Many2one("bthinker.visita", string="Visita", ondelete="set null", readonly=True)
 	
+	def name_get(self):
+		result = []
+		for record in self:
+			name = "{}".format(record.guid)
+			result.append((record.id, name))
+		return result
 	
 	@api.model
 	def default_get(self, fields_list):
@@ -39,7 +45,11 @@ class chave(models.Model):
 		return res
 	
 	def compute_nome(self):
-		for record in self:
-			url = self.env['ir.config_parameter'].get_param('web.base.url', '')
-			record.link_validacao = url + "/?code=" + record.hash_validacao
+		for rec in self:
+			if rec.tipo == 'user':
+				rec.nome = 'Chave de %s' % rec.usuario_id.nome
+			elif rec.tipo == 'visitor':
+				rec.nome = 'Chave para visita de %s (%s)' % (rec.visita_id.nome_visitante, rec.usuario_id.nome)			
+			else:
+				rec.nome = "Sem nome"
 	
