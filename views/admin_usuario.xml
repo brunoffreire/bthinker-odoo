@@ -39,6 +39,16 @@
                 <field name="chave_id"/>
               </group>
             </group>
+            <notebook>
+              <page string="Contratos">
+                <field name="contrato_ids">
+                  <tree string="Contratos do Usuário" delete="false" create="false" edit="false" editable="top">
+                    <field name="partner_id"/>
+                    <field name="state"/>                    
+                  </tree>
+                </field>
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>

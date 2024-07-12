@@ -7,16 +7,6 @@ function redirect(endpoint) {
 	window.location.replace(endpoint);
 }
 
-function start_load() {
-	$(".loader-bg").removeClass('invisible');
-	$(".loader-bg").addClass('visible');
-}
-
-function end_load() {
-	$(".loader-bg").removeClass('visible');
-	$(".loader-bg").addClass('invisible');
-}
-
 function share(title, text, url, callback) {
 	if (navigator.share) {
 		navigator.share({
@@ -37,7 +27,7 @@ function share(title, text, url, callback) {
 /********************************************************************** */
 
 function callServer(endpoint, params, callback) {
-	//start_load();
+	
 	$.ajax({
 		url: "/virtualkey/" + endpoint,
 		type: "POST",

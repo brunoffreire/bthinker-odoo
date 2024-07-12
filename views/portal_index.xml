@@ -2,11 +2,101 @@
 <odoo>
 	<template id="portal_index" name="Layout de Página Pública">
 		<t t-call="bthinker_qrdoor.page_layout">
+			<t t-set="timestamp" t-value="int(time.time())"/>
+			<t t-set="portal_head">
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-QRReader.js?key={}'.format(timestamp)"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index.js?key={}'.format(timestamp)"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/jsQR.min.1.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-index.css?key={}'.format(timestamp)" rel="stylesheet"/>
+			</t>
 			<t t-set="portal_body">
-				<t t-call="bthinker_qrdoor.page_top_menu" />												
-				<div class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-					<t t-call="bthinker_qrdoor.settings_button" />					
-				</div>									
+				<div class="container">
+					<div class="row d-flex">
+						<div class="centered four columns">
+							<a type="button" class="button-primary" id="btn_qrcode" onclick="showPage(0)">
+								<i class="button-icon fas fa-qrcode"></i> QRCode
+							</a>
+						</div>
+						<div class="centered four columns">
+							<a class="button-primary" id="btn_porta" onclick="showPage(1)">
+								<i class="button-icon fas fa-lock-open"></i> Portas
+							</a>
+						</div>
+						<div class="centered four columns">
+							<a class="button-primary" id="btn_visita" onclick="showPage(2)">
+								<i class="button-icon fas fa-user-clock"></i> Visita
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div class="container">
+
+					<div id="page_0" class="row centered">
+						<div class="twelve columns">
+							<p class="centered">Utilize a câmera do seu dispositivo para ler o QRCode da porta.</p>
+						</div>
+
+						<div id="canvas-container">
+							<canvas id="canvas"></canvas>
+						</div>
+						<div id="mensagem">
+
+						</div>
+					</div>
+
+					<div id="page_1" class="d-none">
+						<div class="container">
+							<h3 class="centered">Abertura Remota</h3>
+							<t t-foreach="contrato_ids" t-as="contrato">
+								<div class="centered">
+									<h4><t t-esc="contrato.partner_id.name"/></h4>
+									<t t-foreach="contrato.porta_ids" t-as="porta">
+										<div class="row">
+											<button type="button" class="button button-door" id="btn_visita">
+												<t t-esc="porta.nome"/>
+											</button>
+										</div>
+									</t>
+								</div>
+							</t>
+						</div>
+					</div>
+
+					<div id="page_2" class="d-none">
+						<div class="container">
+							<h3 class="centered">Visita</h3>
+							<form id="form" method="post">
+								<div id="row_fields" class="row">
+									<div class="twelve columns">
+										<label for="visitante">Nome do Visitante</label>
+										<input class="twelve columns" type="text" id="nome_visitante" placeholder="João da Silva" required="1"/>
+
+										<label for="duracao">Duração</label>
+										<input type="number" id="duracao" required="1"/> horas (01 a 24)
+									</div>
+								</div>
+								<div id="row_checkbox" class="row">
+									<div class="twelve columns">
+										<input type="checkbox" id="usa_uma_vez"/>
+										<span>Permitir apenas uma utilização</span>
+									</div>
+								</div>
+								<div id="row_help" class="row">
+									<div class="twelve columns">
+										<p><b>Duração:</b> O link da visita será válido pelo período de tempo informado, a contar do momento do seu cadastro.</p>
+										<p><b>Permitir apenas uma utilização:</b> O link da visita será invalidado assim que o visitante utilizá-lo.</p>
+									</div>
+								</div>
+								<div id="row_login_button" class="twelve columns centered">
+									<button type="button" class="button-primary" id="btn_new_visit">
+										<i class="button-icon fas fa-share-nodes"></i> Compartilhar
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</t>
 		</t>
 	</template>

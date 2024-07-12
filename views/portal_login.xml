@@ -2,70 +2,40 @@
 <odoo>
 	<template id="portal_login" name="Login">
 		<t t-call="bthinker_qrdoor.page_layout">
-			<t t-set="portal_head">
-				<script src="/bthinker_qrdoor/static/src/js/portal-login.js?key=%d' % int(time.time())}}"></script>
-				<link href="/bthinker_qrdoor/static/src/css/portal-login.css?key=%d' % int(time.time())}}" rel="stylesheet"/>				
+			<t t-set="timestamp" t-value="int(time.time())"/>
+			<t t-set="portal_head">				
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-login.js?key={}'.format(timestamp)"/>				
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-login.css?key={}'.format(timestamp)" rel="stylesheet"/>				
 			</t>
 			<t t-set="body_class" t-value="'bg-white-200'"/>
 			<t t-set="portal_body">
-				<main class="main-content mt-0">
-					<div class="page-header align-items-start min-vh-100">
-						<span class="mask bg-gradient-dark opacity-6"></span>
-						<div class="container my-auto">
-							<div class="row">
-								<div class="col-lg-4 col-md-8 col-12 mx-auto">
-									<div class="card z-index-0 fadeIn3 fadeInBottom">
-										<div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-											<div class="bg-gradient-success shadow-primary border-radius-lg py-3 pe-1">
-												<div class="row mt-3">
-												</div>
-												<h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Chave Virtual</h4>
-											</div>
-										</div>
-										<div class="card-body">
-											<form role="form" class="text-start">
-												<div class="input-group input-group-outline my-3">
-													<label class="form-label">Nome de usuário</label>
-													<input id="username" type="email" class="form-control"/>
-												</div>
-												<div class="input-group input-group-outline mb-3">
-													<label class="form-label">Senha</label>
-													<input id="senha" type="password" class="form-control"/>
-												</div>
-												<div class="form-check form-switch d-flex align-items-center mb-3">
-													<input class="form-check-input" type="checkbox" id="rememberMe"/>
-													<label class="form-check-label mb-0 ms-2" for="rememberMe">Mantenha-me conectado neste dispositivo</label>
-												</div>
-												<div class="text-center">
-													<button id="btn_login" type="button" class="btn bg-gradient-success w-100 my-4 mb-2">Entrar</button>
-												</div>
-												<p class="mt-4 text-sm text-center">
-													<span>Não possui uma conta?</span>
-													<div class="text-center">
-														<a href="/virtualkey/cadastro" class="btn bg-gradient-success w-100 my-4 mb-2">Criar minha conta</a>
-													</div>
-												</p>
-											</form>
-										</div>
-									</div>
-								</div>
+				<div class="container">
+					<h3 class="centered">Login</h3>
+					<form id="form" method="post">
+						<div id="row_fields" class="row">
+							<div class="twelve columns">
+								<label for="username">Nome de Usuário</label>
+								<input class="twelve columns" type="text" id="username" placeholder="username" required="1"/>
+
+								<label for="senha">Senha</label>
+								<input class="twelve columns" type="password" id="senha" required="1"/>
 							</div>
 						</div>
-						<footer class="footer position-absolute bottom-2 py-2 w-100">
-							<div class="container">
-								<div class="row align-items-center justify-content-lg-between">
-									<div class="col-12 col-md-6 my-auto">
-										<div class="copyright text-center text-sm text-white text-lg-start">
-											<span>B-Thinker Tecnologia. Todos os direitos reservados.</span>
-											<br/>
-											<a href="https://www.bthinker.com.br" class="font-weight-bold text-white" target="_blank">https://www.bthinker.com.br</a>
-										</div>
-									</div>
-								</div>
+						<div id="row_checkbox" class="row">
+							<div class="twelve columns">
+								<input type="checkbox" id="rememberMe"/>
+								<span>Mantenha-me conectado neste dispositivo</span>
 							</div>
-						</footer>
-					</div>
-				</main>
+						</div>
+						<div id="row_login_button" class="twelve columns centered">
+							<button type="button" class="button-primary" id="btn_login">Entrar</button>
+							<br/>
+							<br/>
+							<br/>
+							Ainda não tem uma conta? <a href="/virtualkey/cadastro">Crie sua conta aqui.</a>
+						</div>
+					</form>
+				</div>
 			</t>
 		</t>
 	</template>

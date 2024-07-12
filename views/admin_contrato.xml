@@ -42,11 +42,10 @@
               <page string="Usuários">
                 <field name="usuario_ids">
                   <tree string="Usuários do Contrato" delete="false" create="false" edit="false" editable="top">
-                    <field name="name"/>
+                    <field name="nome"/>
+                    <field name="username"/>
                     <field name="email"/>
-                    <field name="mobile"/>
-                    <field name="phone"/>
-                    <field name="vat"/>
+                    <field name="celular"/>
                   </tree>
                 </field>
               </page>

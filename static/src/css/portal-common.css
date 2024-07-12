@@ -1,0 +1,29 @@
+.container{
+    padding-top: 20px;
+}
+
+.centered {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.text-justified {
+    text-align: justify;
+}
+
+.button-icon {
+    margin-right: 5px;
+}
+
+.d-flex{
+    display: flex;
+}
+
+.d-none{
+    display: none;
+}
+
+input{
+    margin-bottom: 25px;
+}

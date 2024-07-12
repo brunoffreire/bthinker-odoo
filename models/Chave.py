@@ -27,7 +27,7 @@ class chave(models.Model):
 	], string="Status da Conta", default='user', required=True)
 
 	usuario_id = fields.Many2one("bthinker.usuario", string="Usuário", ondelete="set null", readonly=True)
-	visita_id = fields.Many2one("bthinker.visita", string="Visita", ondelete="set null", readonly=True)
+	visita_id = fields.Many2one("bthinker.visita", string="Visita", readonly=True, ondelete="cascade")
 	
 	def name_get(self):
 		result = []

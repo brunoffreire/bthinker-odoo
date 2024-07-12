@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_login_by_hash" name="Login por Hash">
+		&lt;!DOCTYPE html&gt;
+		<html lang="en">
+			<head>
+				<t t-set="timestamp" t-value="int(time.time())"/>
+				<meta charset="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+				<title>B-Thinker - Chave Virtual</title>				
+				
+				<script src="/bthinker_qrdoor/static/src/js/jquery-3.7.1.min.js"></script>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-common.js?key={}'.format(timestamp)"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-login_by_hash.js?key={}'.format(timestamp)"/>
+
+				<t t-raw="portal_head"/>
+			</head>
+			<body>
+				
+			</body>
+		</html>
+	</template>
+</odoo>

@@ -22,44 +22,33 @@ function checkUsername_callback(data){
 
 function save_profile() {
     
-    var username = $("#username_profile").val();
-    var name = $("#name_profile").val();
-    var email = $("#email_profile").val();
-    var mobile = $("#mobile_profile").val();
-    var password = $("#password_profile").val();
-    var confirm_password = $("#confirm_password_profile").val();   
-    var term_agree = $("#terms_agree").prop("checked") ? '1' : '0';
+    var username = $("#username").val();
+    var nome = $("#nome").val();
+    var email = $("#email").val();
+    var celular = $("#celular").val();
+    var senha = $("#senha").val();
+    var confirma_senha = $("#confirma_senha").val();   
+    var termo = $("#termo").prop("checked") ? '1' : '0';
     
     data = callServer('save_user_profile', {
         'username': username,
-        'name': name,
+        'nome': nome,
         'email': email,
-        'celular': mobile,        
-        'senha': password,
-        'confirma_senha': confirm_password,
-        'agree': term_agree
+        'celular': celular,        
+        'senha': senha,
+        'confirma_senha': confirma_senha,
+        'termo': termo
     }, save_profile_callback);
 }
 
 function save_profile_callback(data) {
-    if (data.result.errno != '0') {
-        Swal.fire({
-			title: '<h6>Ocorreu um erro ao gravar</h6>',
-			html: data.result.message,
-			icon: 'error'
-        })
-    }else{
-        Swal.fire({
-			title: '<h6>Cadastro realizado com sucesso</h6>',
-			html: 'Você receberá um e-mail para confirmar sua conta.',
-			icon: 'success', 
-			showDenyButton: false,
-			timer: 2500
-        }).then(() =>{
-            location.replace("/virtualkey")
-        })
+    if (data.result.errno != '0') {        
+        alert("Ocorreu um erro ao gravar.\n" + data.result.message);
+        return;
     }
-    
+
+    alert("Dados salvos com sucesso!.\nVocê receberá um e-mail para confirmar sua conta.");
+    redirect("/virtualkey");
 }
 
 function toggle_password() {

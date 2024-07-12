@@ -10,18 +10,14 @@ function login() {
 }
 
 function login_callback(data) {
-    if (data.result.errno != '0') {
-        Swal.fire({
-			title: '<h6>Um erro ocorreu.</h6>',
-			html: data.result.message,
-			icon: 'error'
-        });
+    if (data.result.errno != '0') {        
+        alert("Ocorreu um erro.\n" + data.result.message);
         return;
     }
 
     remember_me = $("#rememberMe").is(':checked');
     if (remember_me) {
-        localStorage.setItem("user", data.result.username);
+        localStorage.setItem("user", data.result.user);
         localStorage.setItem("hash", data.result.hash);
         localStorage.setItem("key", data.result.key);
     }

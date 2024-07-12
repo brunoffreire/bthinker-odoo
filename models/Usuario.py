@@ -30,11 +30,12 @@ class usuario(models.Model):
 	state = fields.Selection([
 		('unchecked', 'Não Verificado'),
 		('checked', 'Verificado'),
-	], string="Status da Conta", tracking=True, default='unchecked')
+	], string="Status da Conta", default='unchecked')
 
 	hash_validacao = fields.Char(string="Hash para validação de e-mail")
 	link_validacao = fields.Char(string='Link de validação', compute='compute_link')
-	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="set null", readonly=True)
+	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="set null", readonly=True)	
+	contrato_ids = fields.Many2many('bthinker.contrato', string='Contratos')
 
 	def name_get(self):
 		result = []

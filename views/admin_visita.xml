@@ -19,9 +19,11 @@
         <tree>
           <field name="usuario_id"/>
           <field name="nome_visitante"/>
-          <field name="data_inicio"/>
-          <field name="data_fim"/>
+          <field name="create_date"/>
+          <field name="duracao"/>
           <field name="usa_uma_vez"/>
+          <field name="executado"/>
+          <field name="finalizado"/>
           <field name="chave_id"/>
         </tree>
       </field>
@@ -38,9 +40,11 @@
                 <separator string="Dados Gerais"/>
                 <field name="usuario_id"/>
                 <field name="nome_visitante"/>
-                <field name="data_inicio"/>
-                <field name="data_fim"/>
+                <field name="create_date"/>
+                <field name="duracao"/>
                 <field name="usa_uma_vez"/>
+                <field name="executado"/>
+                <field name="finalizado"/>
                 <field name="chave_id"/>
               </group>
             </group>

@@ -2,96 +2,56 @@
 <odoo>
 	<template id="portal_cadastro" name="Cadastro">
 		<t t-call="bthinker_qrdoor.page_layout">
+			<t t-set="timestamp" t-value="int(time.time())"/>
 			<t t-set="portal_head">
-				<script src="/bthinker_qrdoor/static/src/js/portal-cadastro.js?key=%d' % int(time.time())}}"></script>
-				<link href="/bthinker_qrdoor/static/src/css/portal-cadastro.css?key=%d' % int(time.time())}}" rel="stylesheet"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-cadastro.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-cadastro.css?key={}'.format(timestamp)" rel="stylesheet"/>
 			</t>
 			<t t-set="body_class" t-value="'bg-white-200'"/>
 			<t t-set="portal_body">
-				<main class="main-content mt-0">
-					<div class="main-content position-relative h-100 border-radius-lg ">
-						<div class="container-fluid px-2 px-md-4">
-							<div class="row d-flex justify-content-center">
-								<div class="card-body p-3">
 
-									<div class="col-12 col-xl-4">
-										<div class="card card-plain h-100">
-											<div class="card-header pb-0 p-3">
-												<div class="row">
-													<div class="col-md-8 d-flex align-items-center">
-														<h6 class="mb-0">Meus Dados</h6>
-													</div>
-												</div>
-											</div>
-											<div class="">
-												<form role="form" class="text-start">
-													<div class="input-group input-group-outline my-3">
-														<label class="form-label">Nome de Usuário</label>
-														<input id="username_profile" type="text" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-														<div class="input-group-append">
-															<a class="input-group-text mx-3" onclick="checkUsername();" style="z-index:100">
-																<i class="fas fa-search"></i>
-															</a>
-														</div>
-													</div>
-													<span id="username_message"></span>
-													<div class="input-group input-group-outline my-3">
-														<label class="form-label">Nome</label>
-														<input id="name_profile" type="text" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-													</div>
-													<div class="input-group input-group-outline my-3">
-														<label class="form-label">E-Mail</label>
-														<input id="email_profile" type="email" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-													</div>
-													<div class="input-group input-group-outline my-3">
-														<label class="form-label">Celular</label>
-														<input id="mobile_profile" type="phone" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-													</div>
-													<div id="password_div">
-														<div class="input-group input-group-outline my-3">
-															<label class="form-label">Senha</label>
-															<input id="password_profile" type="password" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-															<div class="input-group-append">
-																<a class="input-group-text mx-3" onclick="passwordShowHide(this);" style="z-index:100">
-																	<i class="fas fa-eye"></i>
-																</a>
-															</div>
-														</div>
-														<div class="input-group input-group-outline my-3">
-															<label class="form-label">Confirmar Senha</label>
-															<input id="confirm_password_profile" type="password" class="form-control" onfocus="focused(this)" onfocusout="defocused(this)"/>
-															<div class="input-group-append">
-																<a class="input-group-text mx-3" onclick="passwordShowHide(this);" style="z-index:100">
-																	<i class="fas fa-eye"></i>
-																</a>
-															</div>
-														</div>
-													</div>
-												</form>
-											</div>
-										</div>
-									</div>
+				<div class="container">
+					<h3 class="centered">Nova conta de Usuário</h3>
+					<form id="form" method="post">
+						<div id="row_fields" class="row">
+							<div class="twelve columns">
+								<label for="username">Nome de Usuário</label>
+								<input class="twelve columns" type="text" id="username" placeholder="username" required="1"/>
 
-									<div class="col-12 col-xl-4">
-										<div class="col-auto my-auto bt-flex">
-											<div class="align-self-center form-check form-switch ps-0">
-												<input class="form-check-input ms-auto bt-margin" type="checkbox" id="terms_agree" checked="" />
-											</div>
-											<div class="copyright text-lg-start text-sm text-xxs p3"> 
-												Estou ciente de que prosseguindo com este cadastro, autorizo a B-Thinker a armazenar e utilizar meus dados pessoais
-												aqui fornecidos para os fins aos quais este sistema se destina.												
-											</div>
+								<label for="nome">Nome Completo</label>
+								<input class="twelve columns" type="text" id="nome" placeholder="José da Silva" required="1"/>
 
-										</div>
-										<div class="col-auto my-auto pt-3 w-100">
-											<button class="btn btn-success btn-sm mb-0 me-4 w-100" id="btn_save" disable="True">Salvar</button>
-										</div>
-									</div>
-								</div>
+								<label for="email">E-Mail</label>
+								<input class="twelve columns" type="email" id="email" placeholder="exemplo@exemplo.com.br" required="1"/>
+
+								<label for="celular">Celular</label>
+								<input class="twelve columns" type="text" id="celular" placeholder="(31) 98765-4321" required="1"/>
+
+								<label for="senha">Senha</label>
+								<input class="twelve columns" type="password" id="senha" required="1"/>
+
+								<label for="confirma_senha">Confirmação de Senha</label>
+								<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
 							</div>
 						</div>
-					</div>
-				</main>
+						<div id="row_termos" class="row">
+							<label>Termos de uso:</label>
+							<div class="twelve columns">
+								<span>Estou ciente de que prosseguindo com este cadastro, autorizo a B-Thinker a armazenar e utilizar meus dados pessoais aqui fornecidos para os fins aos quais este sistema se destina.</span>
+							</div>
+						</div>
+						<div id="row_checkbox" class="row">
+							<div class="twelve columns">
+								<input type="checkbox" id="termo"/>
+								<span>Concordo com os termos de uso</span>
+							</div>
+						</div>
+						<div id="row_save_button" class="twelve columns centered">
+							<button type="button" class="button-primary" id="btn_save">Registrar</button>
+						</div>
+					</form>
+				</div>
+
 			</t>
 		</t>
 	</template>

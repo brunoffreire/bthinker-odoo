@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_visita" name="Página de visita">
+		<t t-call="bthinker_qrdoor.page_layout">
+			<t t-set="timestamp" t-value="int(time.time())"/>
+			<t t-set="portal_head">
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-QRReader.js?key={}'.format(timestamp)"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-visita.js?key={}'.format(timestamp)"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/jsQR.min.1.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-visita.css?key={}'.format(timestamp)" rel="stylesheet"/>
+			</t>
+			<t t-set="portal_body">
+				<div class="container">
+					<h3 class="centered">Chave Virtual B-Thinker</h3>
+				</div>
+
+				<div class="container">
+					<div id="page_0" class="row centered">
+						<div class="twelve columns">
+							<p class="centered">Utilize a câmera do seu dispositivo para ler o QRCode da porta.</p>
+						</div>
+
+						<div id="canvas-container">
+							<canvas id="canvas"></canvas>
+						</div>
+						<div id="mensagem">
+
+						</div>
+					</div>					
+				</div>
+			</t>
+		</t>
+	</template>
+</odoo>

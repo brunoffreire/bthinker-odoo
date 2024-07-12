@@ -42,7 +42,9 @@
 		'views/portal_layout.xml',
         'views/portal_index.xml',
         'views/portal_login.xml',
+        'views/portal_login_by_hash.xml',
         'views/portal_cadastro.xml',
+        'views/portal_visita.xml',
         'views/portal_validate.xml',
         
 		#'views/report_visit_ticket.xml',

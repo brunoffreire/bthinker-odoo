@@ -13,9 +13,17 @@ class contrato(models.Model):
 	_description = "Contrato de Serviço"
 	
 	partner_id  = fields.Many2one("res.partner", string="Cliente", required=True)	
-	usuario_ids = fields.Many2many("res.partner", string="Usuários vinculados a este contrato",  domain="[('is_company', '=', False)]")	
+	usuario_ids = fields.Many2many("bthinker.usuario", string="Usuários do Contrato")	
 	porta_ids = fields.One2many("bthinker.porta", "contrato_id", string="Portas do Contrato")
 	state = fields.Selection([
 		('inactive', 'Inativo'),
 		('active', 'Ativo'),
 	], string="Status do Contrato", default='inactive')
+
+	
+	def name_get(self):
+		result = []
+		for record in self:
+			name = "{}".format(record.partner_id.name)
+			result.append((record.id, name))
+		return result
