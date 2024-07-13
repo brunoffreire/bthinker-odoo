@@ -53,7 +53,7 @@
 									<h4><t t-esc="contrato.partner_id.name"/></h4>
 									<t t-foreach="contrato.porta_ids" t-as="porta">
 										<div class="row">
-											<button type="button" class="button button-door" id="btn_visita">
+											<button type="button" class="button button-door" t-att-data-value="porta.guid" onclick="openByPin(this)">
 												<t t-esc="porta.nome"/>
 											</button>
 										</div>

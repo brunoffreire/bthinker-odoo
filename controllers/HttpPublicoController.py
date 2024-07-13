@@ -12,12 +12,11 @@ from odoo.http import request
 from odoo import modules, tools
 from dateutil import parser
 from datetime import datetime
+
 import datetime
 import json
 import logging
-import base64
-import ast
-
+import requests
 
 
 _logger = logging.getLogger(__name__)
@@ -363,7 +362,13 @@ class HttpPublicoController(http.Controller):
 
 	
 	
+	def open_door_by_pin(self, env, data):
+		data['require_pin'] = True
+		return self.auth_key_door(env, data)
+	
+	
 	def auth_key_door(self, env, data):
+		_logger.info("auth_key_door: %s" % data)
 		try:
 			if 'key' not in data:
 				return {'errno': 1, 'message': 'Chave não informada.'}
@@ -377,6 +382,14 @@ class HttpPublicoController(http.Controller):
 			if len(data["door"].strip()) <= 0:
 				return {'errno': 1, 'message': 'Porta não pode ser vazio.'}
 			
+			# tratamento para solicitação de abertura remota
+			if 'require_pin' in data:
+				if 'pin' not in data:
+					return {'errno': 1, 'message': 'PIN não informado.'}
+
+				if len(data["pin"].strip()) <= 0:
+					return {'errno': 1, 'message': 'PIN não pode ser vazio.'}
+							
 
 			porta = env['bthinker.porta'].sudo().search([('guid', '=', data['door'])])
 			if not porta:
@@ -399,6 +412,11 @@ class HttpPublicoController(http.Controller):
 			# Seje o usuário requisitando ou um de seus visitantes
 			usuario = None
 			if chave.visita_id:
+				
+				# tratamento para solicitação de abertura remota
+				if 'require_pin' in data:
+					return {'errno': '1', 'message': "Não é permitida abertura remota em visitas."}
+
 				if chave.visita_id.usuario_id:
 					usuario = chave.visita_id.usuario_id
 
@@ -411,6 +429,11 @@ class HttpPublicoController(http.Controller):
 
 			elif chave.usuario_id:
 				usuario = chave.usuario_id
+				
+				# tratamento para solicitação de abertura remota
+				if 'require_pin' in data:
+					if usuario.pin_abertura != int(data['pin']):
+						return {'errno': '1', 'message': "PIN de abertura remota incorreto."}
 
 			# o que une porta e usuário é o contrato
 			contrato = usuario.contrato_ids.search([('id', '=', porta.contrato_id.id)])
@@ -418,22 +441,38 @@ class HttpPublicoController(http.Controller):
 				return {'errno': '1', 'message': "Usuário requisitante ou criador da visita não tem acesso a porta solicitada."}
 			
 
-			return {'errno': '0', 'message': "Acesso liberado."}
-			
-
 			# se é chave de visita
-			if chave.visita_id:
+			#if chave.visita_id:				
+			#	chave.visita_id.write({'executado':True, 'finalizado': chave.visita_id.usa_uma_vez})
 				
-				chave.visita_id.write({'executado':True, 'finalizado': chave.visita_id.usa_uma_vez})
-				return {'errno': 0, 'message': 'Acesso liberado.'}	
 			
-			if chave.usuario_id:
+			#if chave.usuario_id:
 				# grava acesso
-				return {'errno': 0, 'message': 'Acesso liberado.'}	
+							
+			data = self.call_esp_server(porta.guid)			
+			_logger.info("ESP DATA: %s" % data)
 
+			if data['errno'] != "0":
+				return {'errno': data['errno'], 'message': data['message']}
+			
+			return {'errno': '0', 'message': "Acesso liberado."}
 
 		except ex:
-			return {'errno': 1, 'message': ex}
-
-
+			return {'errno': 1, 'message': ex}	
 	
+
+
+	def call_esp_server(self, porta_guid):
+		url = 'http://localhost:8200/qrdoor/openDoor'  # URL do servidor externo
+		headers = {
+			'Content-Type': 'application/json',
+		}
+		
+		payload = {
+			'door': porta_guid,
+		}
+		response = requests.post(url, json=payload, headers=headers)
+		response.raise_for_status()  # Verifica se a requisição foi bem-sucedida
+		response_data = response.json()  # Processa a resposta JSON
+		return response_data
+		

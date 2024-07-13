@@ -34,6 +34,7 @@
                 <field name="email"/>
                 <field name="celular"/>
                 <field name="senha"/>
+                <field name="pin_abertura"/>
                 <field name="hash_validacao"/>
                 <field name="link_validacao"/>
                 <field name="chave_id"/>

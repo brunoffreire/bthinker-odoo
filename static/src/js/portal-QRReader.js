@@ -91,7 +91,7 @@ class QRScanner {
         return;
     }*/
 
-    $("#mensagem").val(data.result.message);
+    $("#mensagem").text(data.result.message);
     
   }
 }

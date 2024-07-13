@@ -47,13 +47,27 @@ function showPage(index) {
   $("#page_" + index).removeClass("d-none");
 }
 
-function inputUserPin(obj) {
-  $("#door_pin").val("");
-  $("#door_pin").focus();
-  
+function openByPin(obj) {  
   var pin = prompt("Informe seu PIN numérico:");
     if (pin === null || pin === "") {
         return;
     }
-    alert(pin);
+
+    data = {
+      'key': window.getKey(),
+      'door': $(obj).attr('data-value'),
+      'pin':pin
+    };
+
+    callServer('open_door_by_pin', data, openByPin_callback);
+}
+
+function openByPin_callback(data){
+  if(data.result.errno != '0'){
+    alert(data.result.message);
+    return;
+  }
+
+  alert('Porta aberta.');
+  
 }

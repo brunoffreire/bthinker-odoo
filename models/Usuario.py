@@ -36,6 +36,7 @@ class usuario(models.Model):
 	link_validacao = fields.Char(string='Link de validação', compute='compute_link')
 	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="set null", readonly=True)	
 	contrato_ids = fields.Many2many('bthinker.contrato', string='Contratos')
+	pin_abertura = fields.Integer(string="Pin de Confirmação de Abertura")
 
 	def name_get(self):
 		result = []
