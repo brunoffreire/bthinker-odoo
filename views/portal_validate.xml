@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<template id="portal_validate" name="Pagina de validação de Cadastro">
-		<t t-call="bthinker_qrdoor.page_layout">
+		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="portal_body">
 				<div class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
 					<br/>

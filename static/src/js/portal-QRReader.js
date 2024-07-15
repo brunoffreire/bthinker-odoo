@@ -70,30 +70,17 @@ class QRScanner {
     requestAnimationFrame(this.tick.bind(this));
   }
 
-  sendDoorRequest(door) {  
+  sendDoorRequest(door) {      
     if(door == ""){
         return;
-    } 
+    }
 
     let key = window.getKey();
-    let data = {
-      'door': door,
-      'key': key,
-    };
-
-    callServer("auth_key_door", data, this.door_request_callback);
-  }   
-
-  door_request_callback(data) {
-    
-    /*if(data.result.errno != 0){
-        alert(data.result.message);
-        return;
-    }*/
-
-    $("#mensagem").text(data.result.message);
-    
-  }
+    let data = {'door': door,'key': key};
+    if(window.doorRequestCallback){
+      callServer("auth_key_door", data, window.doorRequestCallback);
+    }
+  }     
 }
 
 // Setup the QR Scanner when the DOM is fully loaded

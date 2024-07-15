@@ -81,12 +81,33 @@ class usuario(models.Model):
 			rec.link_validacao = url + "/virtualkey/validate?code=" + code
 
 	def action_send_enroll_mail(self):
-		template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
-		template.send_mail(self.id, force_send=True)
+		for rec in self:
+			template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
+			email_values = template.generate_email(rec.id, ['subject', 'body_html',
+             'email_from',
+             'email_cc', 'email_to', 'partner_to', 'reply_to',
+             'auto_delete', 'scheduled_date'])
+			
+			email_values['email_from'] = template.mail_server_id.smtp_user
+			email_values['auto_delete'] = False
+			
+			mail = self.env['mail.mail'].create(email_values)
+			mail.send()
+            		
 
 	def send_enroll_mail(self):
-		template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
-		template.send_mail(self.id, force_send=False)
+		for rec in self:
+			template = self.env.ref('bthinker_qrdoor.user_enroll_mail_template')
+			email_values = template.generate_email(rec.id, ['subject', 'body_html',
+             'email_from',
+             'email_cc', 'email_to', 'partner_to', 'reply_to',
+             'auto_delete', 'scheduled_date'])
+			email_values['email_from'] = template.mail_server_id.smtp_user
+			
+			mail = self.env['mail.mail'].create(email_values)
+			#Deixa na fila para enviar quando puder
+			#mail.send()
+
 
 	def validate_account(self):
 		

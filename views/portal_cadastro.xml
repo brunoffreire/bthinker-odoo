@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<template id="portal_cadastro" name="Cadastro">
-		<t t-call="bthinker_qrdoor.page_layout">
+		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="timestamp" t-value="int(time.time())"/>
 			<t t-set="portal_head">
 				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-cadastro.js?key={}'.format(timestamp)"/>

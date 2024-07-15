@@ -357,7 +357,7 @@ class HttpPublicoController(http.Controller):
 
 			return {'errno': 0, 'visitor':visita.nome_visitante.upper(), 'user': visita.usuario_id.nome.upper(), 'url': url}
 		
-		except ex:
+		except Exception as ex:
 			return {'errno': 1, 'message': 'Acesso negado.'}
 
 	
@@ -402,10 +402,10 @@ class HttpPublicoController(http.Controller):
 			# Tudo certo com a porta?
 			# Contrato ativo?
 			if not porta.contrato_id:
-				return {'errno': '1', 'message': "Porta não vinculada a uma conta de cliente."}
+				return {'errno': '1', 'message': "Não há um contrato associado a esta porta."}
 			
-			if not porta.contrato_id.state == 'inactive':
-				return {'errno': '1', 'message': "Porta vinculada a uma conta inativa."}
+			if not porta.contrato_id.state == 'active':
+				return {'errno': '1', 'message': "Porta vinculada a um contrato inativo."}
 
 
 			# Verificando a permissão do usuário na porta
@@ -434,11 +434,15 @@ class HttpPublicoController(http.Controller):
 				if 'require_pin' in data:
 					if usuario.pin_abertura != int(data['pin']):
 						return {'errno': '1', 'message': "PIN de abertura remota incorreto."}
+			
+			#Identificação do usuário
+			if not usuario:
+				return {'errno': '1', 'message': "Usuário não identificado para a chave informada"}
 
 			# o que une porta e usuário é o contrato
-			contrato = usuario.contrato_ids.search([('id', '=', porta.contrato_id.id)])
+			contrato = env['bthinker.contrato'].sudo().search([('porta_ids', 'in', porta.id), ('usuario_ids', 'in', usuario.id)])
 			if not contrato:
-				return {'errno': '1', 'message': "Usuário requisitante ou criador da visita não tem acesso a porta solicitada."}
+				return {'errno': '1', 'message': "Não foi encontrada relação para o par Chave/Porta."}
 			
 
 			# se é chave de visita
@@ -457,7 +461,7 @@ class HttpPublicoController(http.Controller):
 			
 			return {'errno': '0', 'message': "Acesso liberado."}
 
-		except ex:
+		except Exception as ex:
 			return {'errno': 1, 'message': ex}	
 	
 

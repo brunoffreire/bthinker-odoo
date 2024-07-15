@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 	<template id="portal_visita" name="Página de visita">
-		<t t-call="bthinker_qrdoor.page_layout">
+		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="timestamp" t-value="int(time.time())"/>
 			<t t-set="portal_head">
-				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-QRReader.js?key={}'.format(timestamp)"/>
-				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-visita.js?key={}'.format(timestamp)"/>
-				<script t-att-src="'/bthinker_qrdoor/static/src/js/jsQR.min.1.js?key={}'.format(timestamp)"/>
 				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-visita.css?key={}'.format(timestamp)" rel="stylesheet"/>
+				<script src="/bthinker_qrdoor/static/src/js/portal-QRReader.js"/>
+				<script src="/bthinker_qrdoor/static/src/js/jsQR.min.1.js"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-visita.js?key={}'.format(timestamp)"/>
 			</t>
 			<t t-set="portal_body">
 				<div class="container">

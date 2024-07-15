@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-	<template id="page_layout" name="Layout de Página do Portal de Acesso">
+	<template id="portal_layout" name="Layout de Página do Portal de Acesso">
 		&lt;!DOCTYPE html&gt;
 		<html lang="en">
 			<head>
+				<title>B-Thinker - Chave Virtual</title>
 				<t t-set="timestamp" t-value="int(time.time())"/>
-
 				<meta charset="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-				<title>B-Thinker - Chave Virtual</title>
-
 				<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700"/>
 				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
     			<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
 				<link rel="stylesheet" t-att-href="'/bthinker_qrdoor/static/src/css/portal-common.css?key={}'.format(timestamp)"/>
-								
-				<script src="/bthinker_qrdoor/static/src/js/jquery-3.7.1.min.js"></script>
+				<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-common.js?key={}'.format(timestamp)"/>
-
 				<t t-raw="portal_head"/>
 			</head>
-
 			<body t-attf-class="#{body_class if body_class else ''}">
 				<t t-raw="portal_body"/>
 				
 			</body>
-
 		</html>
 	</template>
 
