@@ -29,16 +29,20 @@
       <field name="model">bthinker.porta</field>
       <field name="arch" type="xml">
         <form string="Cadastro de Porta">
+          <header>
+            <button name="action_fire_firmware_update" string="Atualizar Firmware" type="object" class="oe_highlight" />
+          </header>
           <sheet>
             <group col="2">
               <group>
                 <separator string="Dados Gerais"/>
-                <field name="contrato_id"/>                
-                <field name="nome"/>                
+                <field name="contrato_id"/>
+                <field name="nome"/>
                 <field name="guid"/>
-              </group>              
-            </group>            
-          </sheet>          
+                <field name="firmware_file"/>                
+              </group>
+            </group>
+          </sheet>
         </form>
       </field>
     </record>

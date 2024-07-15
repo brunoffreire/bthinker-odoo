@@ -35,7 +35,6 @@ class HttpPublicoController(http.Controller):
 
 		return False
 
-
 	
 	# Pagina inicial. Verifica se tem dados de login armazenados no dispositivo
 	@http.route(['/virtualkey'], type='http', auth="public", website=True)
@@ -131,6 +130,22 @@ class HttpPublicoController(http.Controller):
 		}
 		return request.render("bthinker_qrdoor.portal_validate", values)
 	
+
+	# Atualização de Firmware	
+	@http.route('/virtualkey/firmware', type='http', auth='public', methods=['GET'])
+	def download_file(self, **kwargs):
+		# Obtém o binário de algum lugar, por exemplo, do banco de dados
+		# Aqui estamos simulando um conteúdo binário
+		binary_content = b'This is the content of the file'
+		filename = 'my_file.txt'
+
+		# Crie a resposta HTTP com o conteúdo binário
+		response = request.make_response(binary_content,
+										headers=[
+											('Content-Type', 'application/octet-stream'),
+											('Content-Disposition', f'attachment; filename={filename}')
+										])
+		return response
 
 	# ####################################################################
 	# Aqui já temos os métodos REST que serão chamados pelas páginas
@@ -479,4 +494,4 @@ class HttpPublicoController(http.Controller):
 		response.raise_for_status()  # Verifica se a requisição foi bem-sucedida
 		response_data = response.json()  # Processa a resposta JSON
 		return response_data
-		
+			
