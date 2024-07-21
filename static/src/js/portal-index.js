@@ -26,7 +26,7 @@ function hash_login_callback(data) {
 }
 
 function set_index_page_controls() {
-  const holdTime = 3000;
+  const holdTime = 2000;
 
   $(".button-door").on("mousedown touchstart", function (e) {
     const $button = $(this);

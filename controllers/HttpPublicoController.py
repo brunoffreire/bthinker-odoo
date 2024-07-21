@@ -415,6 +415,11 @@ class HttpPublicoController(http.Controller):
 			user = env['bthinker.usuario'].sudo().search([('username', '=', username)])
 			if user:
 				return {'errno': '1', 'message': "Nome de usuário '%s' indisponível." % username}
+			
+			
+			convite = env['bthinker.convite_usuario'].sudo().search([('guid', '=', data['hash'])])
+			if not convite:
+				return {'errno': '1', 'message': "Hash de autorização de cadastro não encontrado."}	
 
 			# Criando usuário na base
 			vals = {
@@ -423,18 +428,15 @@ class HttpPublicoController(http.Controller):
 				'email': data['email'],
 				'celular': data['celular'],
 				'senha': data['senha'],
+				'porta_ids' : [(6, 0, convite.usuario_id.porta_ids.ids)]
 			}
 												
 			user = env["bthinker.usuario"].sudo().create(vals)
 			user.action_send_enroll_mail()
-
-			convite = env['bthinker.convite_usuario'].sudo().search([('guid', '=', data['hash'])])
-			if not convite:
-				return {'errno': '1', 'message': "Hash de autoriação de cadastro não encontrado."}	
 			
 			convite.unlink()
-
 			env.cr.commit()
+			
 			return {'errno': 0, 'message': 'Dados salvos com sucesso!'}
 	
 		except Exception as err:

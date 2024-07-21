@@ -26,16 +26,16 @@ class QRScanner {
 
   //Bruno F.
   stopCamera() {
+    if (this.video.srcObject) {
+      this.video.srcObject = null;
+    }
+
     if (this.stream) {
       this.stream.getTracks().forEach((track) => {
         track.stop();
       });
       this.stream = null;
-    }
-
-    if (this.video.srcObject) {
-      this.video.srcObject = null;
-    }
+    }    
   }
 
   drawLine(begin, end, color) {
