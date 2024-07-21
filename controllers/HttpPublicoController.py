@@ -428,7 +428,8 @@ class HttpPublicoController(http.Controller):
 				'email': data['email'],
 				'celular': data['celular'],
 				'senha': data['senha'],
-				'porta_ids' : [(6, 0, convite.usuario_id.porta_ids.ids)]
+				'porta_ids' : [(6, 0, convite.usuario_id.porta_ids.ids)],
+				'contrato_ids' :  [(4, convite.contrato_id.id)]
 			}
 												
 			user = env["bthinker.usuario"].sudo().create(vals)

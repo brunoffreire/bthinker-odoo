@@ -133,7 +133,7 @@ class usuario(models.Model):
 			%s
 			''' % (rec.nome, url)			
 			mail = self.env['mail.mail'].create(email_values)
-			#mail.send()
+			mail.send()
             			
 	
 	def send_password_change_email(self):
@@ -169,7 +169,7 @@ class usuario(models.Model):
 			%s
 			''' % (rec.nome, url)			
 			mail = self.env['mail.mail'].create(email_values)
-			#mail.send()
+			mail.send()
 		
 
 class convite_usuario(models.Model):
