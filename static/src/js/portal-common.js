@@ -29,7 +29,7 @@ function share(title, text, url, callback) {
 function callServer(endpoint, params, callback) {
 	
 	$.ajax({
-		url: "/virtualkey/" + endpoint,
+		url: "/api/" + endpoint,
 		type: "POST",
 		dataType: "json",
 		contentType: "application/json",

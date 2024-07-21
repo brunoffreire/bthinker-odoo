@@ -24,6 +24,20 @@ class QRScanner {
       });
   }
 
+  //Bruno F.
+  stopCamera() {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this.stream = null;
+    }
+
+    if (this.video.srcObject) {
+      this.video.srcObject = null;
+    }
+  }
+
   drawLine(begin, end, color) {
     this.canvas.beginPath();
     this.canvas.moveTo(begin.x, begin.y);
@@ -83,8 +97,3 @@ class QRScanner {
   }     
 }
 
-// Setup the QR Scanner when the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-  const scanner = new QRScanner("canvas");
-  scanner.initCamera();
-});

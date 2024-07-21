@@ -4,3 +4,4 @@ access_bthinker_contrato,bthinker.contrato,model_bthinker_contrato,bthinker_qrdo
 access_bthinker_porta,bthinker.porta,model_bthinker_porta,bthinker_qrdoor.qrdoor_user,1,1,1,1
 access_bthinker_visita,bthinker.visita,model_bthinker_visita,bthinker_qrdoor.qrdoor_user,1,1,1,1
 access_bthinker_usuario,bthinker.usuario,model_bthinker_usuario,bthinker_qrdoor.qrdoor_user,1,1,1,1
+access_bthinker_convite_usuario,bthinker.convite_usuario,model_bthinker_convite_usuario,bthinker_qrdoor.qrdoor_user,1,1,1,1

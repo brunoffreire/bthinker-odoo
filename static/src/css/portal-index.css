@@ -7,5 +7,32 @@
 }
 
 .button-door{
+    position: relative;
     margin-top: 20px;
+    min-width: 300px;
+    background: linear-gradient(to right, green 0%, transparent 0%);
+    transition: background 0s;    
 }
+
+.door-button-icon{
+    position: absolute;
+    right: 15px; /* Alinhamento à direita com margem */
+    top: 50%;
+    transform: translateY(-50%); /* Centraliza verticalmente */
+}
+
+div.menuitem{
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0px 3px 15px 3px;
+    border: 1px solid #33C3F0;
+}
+
+div.menuitem:has(> a.selected) {
+    background-color: #33C3F0;    
+}
+
+a.selected{
+    color: #FFF !important;
+}
+

@@ -14,7 +14,7 @@
 						</div>
 					</div>
 					<br/>
-					<a t-att-href="login_url" class="link">Voltar para a página de login.</a>
+					<a href="/virtualkey/login" class="link">Voltar para a página de login.</a>
 				</div>
 			</t>
 		</t>

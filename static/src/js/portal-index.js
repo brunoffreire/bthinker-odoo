@@ -1,5 +1,70 @@
-// Setup the QR Scanner when the DOM is fully loaded
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", (event) => {
+  hash_login();
+});
+
+function hash_login() {
+  let user = localStorage.getItem("user");
+  let hash = localStorage.getItem("hash");
+  let auto_login = localStorage.getItem("auto_login");
+
+  data = {
+    user: user,
+    hash: hash,
+    auto_login: auto_login,
+  };
+
+  callServer("do_hash_login", data, hash_login_callback);
+}
+
+function hash_login_callback(data) {
+  if (data.result.errno == "0") {
+    $("body").html(data.result.html);
+    set_index_page_controls();
+    return;
+  }
+  redirect("/virtualkey/login");
+}
+
+function set_index_page_controls() {
+  const holdTime = 3000;
+
+  $(".button-door").on("mousedown touchstart", function (e) {
+    const $button = $(this);
+    let progress = 0;
+    let progressInterval;
+
+    e.preventDefault();
+
+    progressInterval = setInterval(function () {
+      progress += 100 / (holdTime / 100);
+      $button.css(
+        "background",
+        `linear-gradient(to right, green ${progress}%, transparent ${progress}%)`
+      );
+
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+        openByHolding($button);
+        $button.css(
+          "background",
+          "linear-gradient(to right, green 0%, transparent 0%)"
+        );
+      }
+    }, 100);
+
+    $button.on(
+      "mouseup mouseleave touchend touchcancel",
+      function resetButton() {
+        clearInterval(progressInterval);
+        $button.css(
+          "background",
+          "linear-gradient(to right, green 0%, transparent 0%)"
+        );
+        $button.off("mouseup mouseleave", resetButton);
+      }
+    );
+  });
+
   $("#btn_new_visit").click(function () {
     data = {
       nome_visitante: $("#nome_visitante").val(),
@@ -7,6 +72,13 @@ document.addEventListener("DOMContentLoaded", function () {
       usa_uma_vez: $("#usa_uma_vez").is(":checked") ? "1" : "0",
     };
     callServer("save_new_visit", data, save_new_visit_callback);
+  });
+
+  $("#btn_invite_user").click(function () {
+    data = {
+      contrato_convite_id: $("#contrato_convite_id").val(),
+    };
+    callServer("save_new_user_invite", data, save_new_user_invite_callback);
   });
 
   window.getKey = function () {
@@ -18,7 +90,9 @@ document.addEventListener("DOMContentLoaded", function () {
     $("#mensagem").text(data.result.message);
   };
 
-});
+  const scanner = new QRScanner("canvas");
+  scanner.initCamera();
+}
 
 function save_new_visit_callback(data) {
   if (data.result.errno != "0") {
@@ -39,6 +113,20 @@ function save_new_visit_callback(data) {
   );
 }
 
+function save_new_user_invite_callback(data) {
+  if (data.result.errno != "0") {
+    alert(data.result.message);
+    return;
+  }
+  share(
+    "Convite para Cadastro",
+    "Este é o seu link de cadastro do sistema de automação de portaria.\n\n" +
+    "Validade do link: "+ data.result.date +".\n\n",
+    data.result.url,
+    null
+  );
+}
+
 function visit_share_callback() {
   $("#nome_visitante").val("");
   $("#duracao").val("");
@@ -50,24 +138,21 @@ function showPage(index) {
   $("#page_1").addClass("d-none");
   $("#page_2").addClass("d-none");
   $("#page_" + index).removeClass("d-none");
+
+  $("a[name='btn_page']").removeClass();
+  $("#btn_page_" + index).addClass("selected");
 }
 
-function openByPin(obj) {
-  var pin = prompt("Informe seu PIN numérico:");
-  if (pin === null || pin === "") {
-    return;
-  }
-
+function openByHolding(obj) {
   data = {
     key: window.getKey(),
     door: $(obj).attr("data-value"),
-    pin: pin,
   };
 
-  callServer("open_door_by_pin", data, openByPin_callback);
+  callServer("auth_key_door", data, openByHolding_callback);
 }
 
-function openByPin_callback(data) {
+function openByHolding_callback(data) {
   if (data.result.errno != "0") {
     alert(data.result.message);
     return;

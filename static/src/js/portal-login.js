@@ -20,9 +20,26 @@ function login_callback(data) {
         localStorage.setItem("user", data.result.user);
         localStorage.setItem("hash", data.result.hash);
         localStorage.setItem("key", data.result.key);
+        localStorage.setItem("auto_login", remember_me);
     }
 
-    redirect("/virtualkey/index");
+    redirect("/virtualkey");
+}
+
+
+function change_password() {        
+    username = $("#username").val();
+    callServer('change_user_password', {
+        'username': username
+    }, change_password_callback);
+}
+
+function change_password_callback(data) {
+    if (data.result.errno != '0') {        
+        alert("Ocorreu um erro.\n" + data.result.message);
+        return;
+    }
+    alert("Sucesso!\n\n" + data.result.message);
 }
 
 $(document).ready(function() {
@@ -34,5 +51,14 @@ $(document).ready(function() {
         if (ev.keyCode == 13) {
             login();
         }
+    });
+
+    $("#forgot_password").click(function() {
+        var ok = confirm("Deseja receber um e-mail para redefinição de senha?");
+        if(!ok){
+            return;
+        }
+
+        change_password();
     });
 });

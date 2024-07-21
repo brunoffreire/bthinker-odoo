@@ -20,6 +20,7 @@
           <field name="contrato_id"/>
           <field name="nome"/>
           <field name="guid"/>
+          <field name="tipo_comunicacao"/>
         </tree>
       </field>
     </record>
@@ -39,9 +40,22 @@
                 <field name="contrato_id"/>
                 <field name="nome"/>
                 <field name="guid"/>
+                <field name="tipo_comunicacao"/>
                 <field name="firmware_file"/>                
               </group>
             </group>
+            <notebook>
+              <page string="Usuários">
+                <field name="usuario_ids">
+                  <tree string="Usuários do Contrato" delete="false" create="false" edit="false" editable="top">
+                    <field name="nome"/>
+                    <field name="username"/>
+                    <field name="email"/>
+                    <field name="celular"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
           </sheet>
         </form>
       </field>

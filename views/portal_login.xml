@@ -23,13 +23,15 @@
 						</div>
 						<div id="row_checkbox" class="row">
 							<div class="twelve columns">
-								<input type="checkbox" id="rememberMe"/>
+								<input type="checkbox" id="rememberMe" checked="1"/>
 								<span>Mantenha-me conectado neste dispositivo</span>
 							</div>
 						</div>
 						<div id="row_login_button" class="twelve columns centered">
 							<button type="button" class="button-primary" id="btn_login">Entrar</button>
 							<br/>
+							<br/>
+							<a href="javascript:void(0);" id="forgot_password">Esqueci minha senha</a>
 							<br/>
 							<br/>
 							Ainda não tem uma conta? <a href="/virtualkey/cadastro">Crie sua conta aqui.</a>

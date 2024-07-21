@@ -18,5 +18,6 @@ class visita(models.Model):
 	usa_uma_vez = fields.Boolean(string="Expira após uso", help="Marcando essa opção, a chave será invalidada assim que utilizada.")
 	chave_id  = fields.Many2one("bthinker.chave", string="Chave Associada", required=True, ondelete="cascade")
 	
-	executado = fields.Boolean(string="Expira após uso", help="Indica que a visita foi realizada.", required=True, default=False)
+	executado = fields.Boolean(string="Já utilizada", help="Indica que a visita foi realizada.", required=True, default=False)
 	finalizado = fields.Boolean(string="Encerrada", help="Indica que a visita está finalizada.", required=True, default=False)
+	ultimo_uso = fields.Datetime(string="Última utilização", readonly=True)

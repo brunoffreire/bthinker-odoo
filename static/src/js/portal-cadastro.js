@@ -29,6 +29,9 @@ function save_profile() {
     var senha = $("#senha").val();
     var confirma_senha = $("#confirma_senha").val();   
     var termo = $("#termo").prop("checked") ? '1' : '0';
+
+    let params = new URLSearchParams(window.location.search);
+    let hash = params.get("hash");
     
     data = callServer('save_user_profile', {
         'username': username,
@@ -37,7 +40,8 @@ function save_profile() {
         'celular': celular,        
         'senha': senha,
         'confirma_senha': confirma_senha,
-        'termo': termo
+        'termo': termo,
+        'hash': hash
     }, save_profile_callback);
 }
 

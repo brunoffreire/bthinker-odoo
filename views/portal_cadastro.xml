@@ -10,48 +10,52 @@
 			<t t-set="body_class" t-value="'bg-white-200'"/>
 			<t t-set="portal_body">
 
-				<div class="container">
-					<h3 class="centered">Nova conta de Usuário</h3>
-					<form id="form" method="post">
-						<div id="row_fields" class="row">
-							<div class="twelve columns">
-								<label for="username">Nome de Usuário</label>
-								<input class="twelve columns" type="text" id="username" placeholder="username" required="1"/>
+				<t t-if="errno == 1">
+					<p><t t-esc="message"/></p>
+				</t>
+				<t t-else="">
+					<div class="container">
+						<h3 class="centered">Nova conta de Usuário</h3>
+						<form id="form" method="post">
+							<div id="row_fields" class="row">
+								<div class="twelve columns">
+									<label for="username">Nome de Usuário</label>
+									<input class="twelve columns" type="text" id="username" placeholder="username" required="1"/>
 
-								<label for="nome">Nome Completo</label>
-								<input class="twelve columns" type="text" id="nome" placeholder="José da Silva" required="1"/>
+									<label for="nome">Nome Completo</label>
+									<input class="twelve columns" type="text" id="nome" placeholder="José da Silva" required="1"/>
 
-								<label for="email">E-Mail</label>
-								<input class="twelve columns" type="email" id="email" placeholder="exemplo@exemplo.com.br" required="1"/>
+									<label for="email">E-Mail</label>
+									<input class="twelve columns" type="email" id="email" placeholder="exemplo@exemplo.com.br" required="1"/>
 
-								<label for="celular">Celular</label>
-								<input class="twelve columns" type="text" id="celular" placeholder="(31) 98765-4321" required="1"/>
+									<label for="celular">Celular</label>
+									<input class="twelve columns" type="text" id="celular" placeholder="(31) 98765-4321" required="1"/>
 
-								<label for="senha">Senha</label>
-								<input class="twelve columns" type="password" id="senha" required="1"/>
+									<label for="senha">Senha</label>
+									<input class="twelve columns" type="password" id="senha" required="1"/>
 
-								<label for="confirma_senha">Confirmação de Senha</label>
-								<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
+									<label for="confirma_senha">Confirmação de Senha</label>
+									<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
+								</div>
 							</div>
-						</div>
-						<div id="row_termos" class="row">
-							<label>Termos de uso:</label>
-							<div class="twelve columns">
-								<span>Estou ciente de que prosseguindo com este cadastro, autorizo a B-Thinker a armazenar e utilizar meus dados pessoais aqui fornecidos para os fins aos quais este sistema se destina.</span>
+							<div id="row_termos" class="row">
+								<label>Termos de uso:</label>
+								<div class="twelve columns">
+									<span>Estou ciente de que prosseguindo com este cadastro, autorizo a B-Thinker a armazenar e utilizar meus dados pessoais aqui fornecidos para os fins aos quais este sistema se destina.</span>
+								</div>
 							</div>
-						</div>
-						<div id="row_checkbox" class="row">
-							<div class="twelve columns">
-								<input type="checkbox" id="termo"/>
-								<span>Concordo com os termos de uso</span>
+							<div id="row_checkbox" class="row">
+								<div class="twelve columns">
+									<input type="checkbox" id="termo"/>
+									<span>Concordo com os termos de uso</span>
+								</div>
 							</div>
-						</div>
-						<div id="row_save_button" class="twelve columns centered">
-							<button type="button" class="button-primary" id="btn_save">Registrar</button>
-						</div>
-					</form>
-				</div>
-
+							<div id="row_save_button" class="twelve columns centered">
+								<button type="button" class="button-primary" id="btn_save">Registrar</button>
+							</div>
+						</form>
+					</div>
+				</t>
 			</t>
 		</t>
 	</template>

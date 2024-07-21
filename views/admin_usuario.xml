@@ -1,6 +1,5 @@
 <odoo>
   <data>
-
     <record model="ir.ui.view" id="bthinker_qrdoor.usuario_list">
       <field name="name">bthinker.usuario.list</field>
       <field name="model">bthinker.usuario</field>
@@ -8,10 +7,12 @@
         <tree>
           <field name="nome"/>
           <field name="username"/>
+          <field name="tipo"/>
           <field name="email"/>
           <field name="celular"/>
-          <field name="state"/>          
+          <field name="state"/>
           <field name="chave_id"/>
+          <field name="status_ultimo_login"/>
         </tree>
       </field>
     </record>
@@ -22,7 +23,7 @@
       <field name="arch" type="xml">
         <form string="Cadastro de Usuario">
           <header>
-            <button name="action_send_enroll_mail" string="Enviar e-mail de cadastro" type="object"  class="oe_highlight" />
+            <button name="action_send_enroll_mail" string="Enviar e-mail de cadastro" type="object" class="oe_highlight" />
             <field name="state" widget="statusbar" options="{'clickable': True, 'fold_field': 'fold'}" />
           </header>
           <sheet>
@@ -31,21 +32,28 @@
                 <separator string="Dados Gerais"/>
                 <field name="nome"/>
                 <field name="username"/>
+                <field name="tipo"/>
                 <field name="email"/>
                 <field name="celular"/>
                 <field name="senha"/>
-                <field name="pin_abertura"/>
-                <field name="hash_validacao"/>
-                <field name="link_validacao"/>
                 <field name="chave_id"/>
+                <field name="status_ultimo_login"/>
               </group>
             </group>
             <notebook>
               <page string="Contratos">
                 <field name="contrato_ids">
-                  <tree string="Contratos do Usuário" delete="false" create="false" edit="false" editable="top">
+                  <tree string="Contratos do Usuário" delete="false" create="false" edit="false" editable="top" default_order="partner_id">
                     <field name="partner_id"/>
-                    <field name="state"/>                    
+                    <field name="state"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Portas">
+                <field name="porta_ids">
+                  <tree string="Portas do Usuário" delete="true" create="true" edit="true" editable="top" default_order="contrato_id">
+                    <field name="contrato_id"/>
+                    <field name="nome"/>
                   </tree>
                 </field>
               </page>
@@ -69,26 +77,51 @@
       </field>
     </record>
 
-    <record model="mail.template" id="bthinker_qrdoor.user_enroll_mail_template">
-      <field name="name">E-Mail de Cadastro de Usuário</field>
-      <field name="model_id" ref="bthinker_qrdoor.model_bthinker_usuario"/>
-      <field name="email_from"></field>
+    <record model="mail.template" id="bthinker_qrdoor.base_usuario_mail_template">
+      <field name="name">E-Mail Base Usuario</field>
+      <field name="model_id" ref="bthinker_qrdoor.model_bthinker_usuario"/>      
       <field name="email_to">{{ object.email }}</field>
-      <field name="subject">Confirmação de Cadastro</field>
-      <field name="body_html" type="html">
-        <div style="margin: 0px; padding: 0px;">
-          <div style="margin: 0px; padding: 0px;">
-              Olá <t t-out="object.nome"/>,
-              <br/><br/>
-              Para finalizar o seu cadastro e habilitar sua conta, clique no link abaixo:
-              <br/>
-              <a t-att-href="object.link_validacao"><t t-esc="object.link_validacao"/></a>
-              <br/><br/>
-              Atenciosamente,
-              <br/>
-              Equipe B-Thinker.
-        </div>
-      </div>
+      <field name="subject">Asunto</field>      
+  </record>  
+
+  <record model="ir.actions.act_window" id="bthinker_qrdoor.convite_usuario_action_window">
+    <field name="name">Convites de Cadastro</field>
+    <field name="res_model">bthinker.convite_usuario</field>
+    <field name="view_mode">tree,form</field>
+    <field name="help" type="html">
+      <p class="oe_view_nocontent_smiling_face">
+
+      </p>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="bthinker_qrdoor.convite_usuario_list">
+    <field name="name">bthinker.convite_usuario.list</field>
+    <field name="model">bthinker.convite_usuario</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="usuario_id"/>
+        <field name="contrato_id"/>
+        <field name="guid"/>
+        <field name="create_date"/>
+      </tree>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="bthinker_qrdoor.convite_usuario_form">
+    <field name="name">bthinker.convite_usuario.form</field>
+    <field name="model">bthinker.convite_usuario</field>
+    <field name="arch" type="xml">
+      <form string="Convites de Cadastro">
+        <sheet>
+          <group>            
+            <field name="usuario_id"/>
+            <field name="contrato_id"/>
+            <field name="guid"/>            
+            <field name="create_date"/>
+          </group>
+        </sheet>
+      </form>
     </field>
   </record>
 

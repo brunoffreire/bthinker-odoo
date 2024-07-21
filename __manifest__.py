@@ -38,12 +38,14 @@
         'views/admin_usuario.xml',
         'views/admin_visita.xml',
         'views/admin_menu.xml',
-        
+        'views/admin_settings.xml',        
 		'views/portal_layout.xml',
         'views/portal_index.xml',
+        'views/portal_index_authorized.xml',
+        'views/portal_index_denied.xml',        
         'views/portal_login.xml',
-        'views/portal_login_by_hash.xml',
         'views/portal_cadastro.xml',
+        'views/portal_muda_senha.xml',
         'views/portal_visita.xml',
         'views/portal_validate.xml',
         

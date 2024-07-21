@@ -22,147 +22,144 @@ import requests
 _logger = logging.getLogger(__name__)
 
 # Rotas da interface responsiva para acesso web em smartphones
+#env = http.request.env
+#callback_url = http.request.httprequest.host_url		
+
 class HttpPublicoController(http.Controller):
-
-	# Metodo para renderizar a página somente se o usuário já fez login
-	def checkSession(self):
-		env = http.request.env
-		if 'user_id' in request.session:
-			if request.session['user_id']:				
-				user = env["bthinker.usuario"].sudo().search([('id', '=', request.session['user_id'])])
-				if user:
-					return True
-
-		return False
-
-	
-	# Pagina inicial. Verifica se tem dados de login armazenados no dispositivo
-	@http.route(['/virtualkey'], type='http', auth="public", website=True)
-	def portal_login_by_hash(self, token=None, **kw):				
+		
+	@http.route(['/virtualkey', '/virtualkey/index'], type='http', auth="public", website=True)
+	def portal_index(self, token=None, **kw):
 		values = {}
-		if self.checkSession():
-			return request.render("bthinker_qrdoor.portal_index", values)
-		else:			
-			return request.render("bthinker_qrdoor.portal_login_by_hash", values)
-	
-
-	
-	@http.route('/virtualkey/index', type='http', auth="public", website=True)
-	def portal_index(self, token=None, **kw):		
-
-		if not self.checkSession():
-			return request.render("bthinker_qrdoor.portal_login", values)	
-
-		# Usuário está logado. Lista as portas dos contratos na pagina
-		env = http.request.env
-		user = env["bthinker.usuario"].sudo().search([('id', '=', request.session['user_id'])])
-		contrato_ids = user.contrato_ids
-		values = {
-			'contrato_ids': contrato_ids
-		}
-		return request.render("bthinker_qrdoor.portal_index", values)
+		return request.render("bthinker_qrdoor.portal_index", values)						
 
 
-	@http.route(['/virtualkey/login'], type='http', auth="public", website=True)
+	@http.route('/virtualkey/login', type='http', auth="public", website=True)
 	def portal_login(self, token=None, **kw):
-		#env = http.request.env
-		#callback_url = http.request.httprequest.host_url		
+		request.session['user'] = None
 		values = {}
 		return request.render("bthinker_qrdoor.portal_login", values)	
 
-	
+
 	@http.route('/virtualkey/logout', type='http', auth="public", website=True)
 	def portal_logout(self, token=None, **kw):
-		# Limpando a sessão
-		request.session['user_id'] = None
-		return request.render("bthinker_qrdoor.portal_login", {})
-
-
-	@http.route('/virtualkey/cadastro', type='http', auth="public", website=True)
-	def portal_cadastro(self, token=None, **kw):
-		#env = http.request.env
-		#callback_url = http.request.httprequest.host_url
-
-		values = {}
-		return request.render("bthinker_qrdoor.portal_cadastro", values)
+		request.session['user'] = None
+		return request.redirect("/virtualkey/login")
 	
 
 	@http.route('/virtualkey/visita', type='http', auth="public", website=True)
-	def portal_cadastro(self, token=None, **kw):
-		#env = http.request.env
-		#callback_url = http.request.httprequest.host_url
-
+	def portal_visita(self, token=None, **kw):
 		values = {}
 		return request.render("bthinker_qrdoor.portal_visita", values)
+	
+
+	@http.route('/virtualkey/cadastro', type='http', auth="public", website=True)
+	def portal_cadastro(self, token=None, **kw):
+		
+		errno = 0
+		message = None
+		env = http.request.env
+
+		try:	
+			params = http.request.params
+			guid = params.get('hash')
+			convite = env['bthinker.convite_usuario'].sudo().search([('guid', '=', guid)])
+			
+			if not convite:
+				errno = 1
+				message = "Convite de cadastro inválido."
+								
+		except Exception as e:
+			errno = 1
+			message = e
+		
+		values = {
+			'errno' : errno,		
+			'message': message
+		}
+		return request.render("bthinker_qrdoor.portal_cadastro", values)
+	
+
+	@http.route('/virtualkey/mudasenha', type='http', auth="public", website=True)
+	def portal_muda_senha(self, token=None, **kw):
+		
+		errno = 0
+		message = None
+		env = http.request.env
+
+		try:	
+			params = http.request.params
+			hash = params.get('hash')		
+			strJson = StringUtils.fromBase64(hash)
+			data = StringUtils.jsonToDict(strJson)
+
+			user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
+			
+			if not user:
+				errno = 1
+				message = "Cadastro de usuário não localizado."
+								
+		except Exception as e:
+			errno = 1
+			message = e
+		
+		values = {
+			'errno' : errno,		
+			'message': message
+		}
+		return request.render("bthinker_qrdoor.portal_muda_senha", values)
+	
 
 
 	@http.route('/virtualkey/validate', type='http', auth="public", website=True)
 	def portal_validate(self, token=None, **kw):
+		
 		errno = 0
 		message = "Sua conta foi verificada com sucesso!"
+		env = http.request.env
 
-		try:
-			env = http.request.env
-			#callback_url = http.request.httprequest.host_url
+		try:	
 			params = http.request.params
-			code = params.get('code')
-			strJson = StringUtils.fromBase64(code)
+			hash = params.get('hash')
+			strJson = StringUtils.fromBase64(hash)
 			data = StringUtils.jsonToDict(strJson)
 
-			user = env['bthinker.usuario'].sudo().search([('username', '=', data['username']), ('hash_validacao', '=', data['hash'])])
+			user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
 			if not user:
 				errno = 1
 				message = "Sua conta não foi encontrada."
 			
-			#cria a chave do usuário
-			key = env['bthinker.chave'].sudo().create({'tipo':'user', 'usuario_id':user.id})
-			user.write({'state':'checked', 'chave_id': key.id});
+			user.write({'state':'checked'});
 					
 		except Exception as e:
 			errno = 1
 			message = e
 		
-		login_url = env['ir.config_parameter'].get_param('web.base.url', '') + "/virtualkey/login"
+		#login_url = env['ir.config_parameter'].get_param('web.base.url', '') + "/virtualkey/login"
 		values = {
 			'errno' : errno,		
-			'message': message,
-			'login_url': login_url
+			'message': message
 		}
 		return request.render("bthinker_qrdoor.portal_validate", values)
 	
-
-	# Atualização de Firmware	
-	@http.route('/virtualkey/firmware', type='http', auth='public', methods=['GET'])
-	def download_file(self, **kwargs):
-		# Obtém o binário de algum lugar, por exemplo, do banco de dados
-		# Aqui estamos simulando um conteúdo binário
-		binary_content = b'This is the content of the file'
-		filename = 'my_file.txt'
-
-		# Crie a resposta HTTP com o conteúdo binário
-		response = request.make_response(binary_content,
-										headers=[
-											('Content-Type', 'application/octet-stream'),
-											('Content-Disposition', f'attachment; filename={filename}')
-										])
-		return response
 
 	# ####################################################################
 	# Aqui já temos os métodos REST que serão chamados pelas páginas
 	# com dados do usuário numa string formato json, para facilitar
 	# ####################################################################
-	@http.route('/virtualkey/<string:endpoint>', type='json', auth='public', csrf=False, cors='*')
+	@http.route('/api/<string:endpoint>', type='json', auth='public', csrf=False, cors='*')
 	def portal_request(self, endpoint, **kw):
 
 		env = http.request.env
 		url = http.request.httprequest.url
 		data = json.loads(http.request.httprequest.data)
 
+		_logger.info("URL: %s" % url)
 		_logger.info("ENDPOINT: %s" % endpoint)
 		_logger.info("DATA: %s" % data)
 
 		response = getattr(self, endpoint)(env, data)
 		_logger.info("Result: %s" % response)
+
 		return response
 
 	# Método que processa requisição de Login do usuário
@@ -170,29 +167,55 @@ class HttpPublicoController(http.Controller):
 	def do_user_login(self, env, data):
 		
 		try:
-			if 'username' not in data:
-				return {'errno': 1, 'message': 'Nome do usuário não informado.'}
+			erro = None
+			while True:
+				if 'username' not in data:
+					erro = {'errno': 1, 'message': 'Nome do usuário não informado.'}
+					break
 
-			if len(data["username"].strip()) <= 0:
-				return {'errno': 1, 'message': 'Nome do usuário não pode ser vazio.'}
+				if len(data["username"].strip()) <= 0:
+					erro = {'errno': 1, 'message': 'Nome do usuário não pode ser vazio.'}
+					break
 
-			if 'senha' not in data:
-				return {'errno': 1, 'message': 'Senha não informada.'}
+				if 'senha' not in data:
+					erro = {'errno': 1, 'message': 'Senha não informada.'}
+					break
 
-			if len(data["senha"].strip()) <= 0:
-				return {'errno': 1, 'message': 'Senha não pode ser vazio.'}
+				if len(data["senha"].strip()) <= 0:
+					erro = {'errno': 1, 'message': 'Senha não pode ser vazio.'}
+					break
+				
+				senha = StringUtils.str2md5(data['senha'])
+				user = env['bthinker.usuario'].sudo().search([('username', '=', data['username'])])
+				if not user:
+					erro = {'errno': 1, 'message': 'Usuário não encontrado ou senha incorreta.'}
+					break
+				
+				if user.senha != senha:
+					erro = {'errno': 1, 'message': 'Usuário não encontrado ou senha incorreta.'}
+					break
+				
+				if user.state == "unchecked":
+					erro = {'errno': 1, 'message': 'Essa conta ainda não foi ativada. Um link de ativação foi enviado para o e-mail informado durante o cadastro.'}
+					break
+				
+				if not user.chave_id:
+					erro = {'errno': 1, 'message': 'Essa conta ainda não possui uma chave associada.'}
+					break
 
-			senha = StringUtils.str2md5(data['senha'])
-			user = env['bthinker.usuario'].sudo().search([('username', '=', data['username']), ('senha', '=', senha)])
-			if not user:
-				return {'errno': 1, 'message': 'Usuário não encontrado ou senha incorreta.'}
+				break
 			
-			if user.state == "unchecked":
-				return {'errno': 1, 'message': 'Essa conta ainda não foi ativada. Um link de ativação foi enviado para o e-mail informado durante o cadastro.'}
+			# Se ocorreu algum erro
+			# se houve algum erro, redireciona para login
+			if erro:
+				if user:
+					user.sudo().write({"status_ultimo_login": erro['message']})
+				
+				return erro
+					
 			
-			http.request.session['user_id'] = user.id
-			key = user.chave_id.guid
-			return {'errno': 0, 'user': user.username, 'hash': user.hash_validacao, 'key':key}			
+			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao, 'key': user.chave_id.guid}
+			return {'errno': 0, 'user': user.username, 'hash': user.hash_validacao, 'key': user.chave_id.guid}
 		
 		except AccessDenied:
 			return {'errno': 1, 'message': 'Acesso negado.'}
@@ -202,64 +225,153 @@ class HttpPublicoController(http.Controller):
 	# Método que processa requisição de Login do usuário via hash unico
 	def do_hash_login(self, env, data):
 		
+		_logger.info("HASH LOGIN DATA: %s" % data)
+
 		try:
-			if 'user' not in data:
-				return {'errno': 1, 'message': 'Nome do usuário não informado.'}
 
-			if len(data["user"].strip()) <= 0:
-				return {'errno': 1, 'message': 'Nome do usuário não pode ser vazio.'}
+			fields_to_check = {
+				"user": "Nome de usuário",
+				"hash": "Hash"
+			}
 
-			if 'hash' not in data:
-				return {'errno': 1, 'message': 'Hash não informada.'}
+			erro = None
+			while True:
+				for key, value in fields_to_check.items():
+					if key not in data:
+						erro = {'errno': 1, 'message': '%s não está presente.' % value}
+						break
 
-			if len(data["hash"].strip()) <= 0:
-				return {'errno': 1, 'message': 'Hash não pode ser vazio.'}
-			
-			if 'key' not in data:
-				return {'errno': 1, 'message': 'Key não informada.'}
+					if data[key] is None:
+						erro =  {'errno': 1, 'message': '%s não pode ter valor nulo.' % value}
+						break
 
-			if len(data["key"].strip()) <= 0:
-				return {'errno': 1, 'message': 'Key não pode ser vazio.'}
-			
-			user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
-			if not user:
-				return {'errno': 1, 'message': 'Usuário não encontrado ou hash incorreta.'}
-			
-			if user.state == "unchecked":
-				return {'errno': 1, 'message': 'Essa conta ainda não foi ativada. Um link de ativação foi enviado para o e-mail informado durante o cadastro.'}
-			
-			if not user.chave_id:
-				return {'errno': 1, 'message': 'Não há chave definida para esse usuário.'}
-			
-			if user.chave_id.guid != data['key']:
-				return {'errno': 1, 'message': 'Chave incorreta.'}
-						
-			http.request.session['user_id'] = user.id			
-			return {'errno': 0, 'message' : 'Login por hash bem sucedido.'}
+					if len(data[key].strip()) <= 0:
+						erro =  {'errno': 1, 'message': '%s não pode ser vazio.' % value}
+						break
+				
+				user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
+				if not user:
+					erro =  {'errno': 1, 'message': 'Usuário não encontrado ou hash incorreta.'}
+					break
+				
+				if user.state == "unchecked":
+					erro =  {'errno': 1, 'message': 'Essa conta ainda não foi ativada. Um link de ativação foi enviado para o e-mail informado durante o cadastro.'}
+					break
+				
+				if not user.chave_id:
+					erro =  {'errno': 1, 'message': 'Não há chave definida para esse usuário.'}
+					break								
+				
+				break
+
+			# se houve algum erro, redireciona para login
+			if erro:
+				# saída padrão. Só muda no sucesso
+				# html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_denied", {})
+				if user:
+					user.sudo().write({"status_ultimo_login": erro['message']})
+					
+				return erro
+
+
+			# Usuário está logado.
+			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao}
+
+			# Obtem as portas que o usuário tem acesso
+			env = http.request.env			
+			#contrato_ids = user.contrato_ids
+			values = {
+				'user': user
+			}
 		
-		except AccessDenied:
-			return {'errno': 1, 'message': 'Acesso negado.'}
+			html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_authorized", values)					
+			return {'errno': 0, 'message' : 'Login por hash bem sucedido.', 'html': html}
+		
+		except Exception as ex:
+			return {'errno': 1, 'message': ex}
 		
 		
 	
 	# Salvar cadastro de novo usuário
 	def check_username_profile(self, env, data):		
 		valid_chars = "abcdefghijklmnopqrstuvwxyz0123456789._-"
-		username = data['username']
-
-		if len(username.strip()) <= 0:
+		
+		if 'username' not in data:
+			return {'errno': '1', 'message': "Nome de usuário não informado."}			
+		
+		if len(data['username'].strip()) <= 0:
 			return {'errno': '1', 'message': "Nome de usuário não pode ser vazio."}	
 		
-		for c in username:
+		for c in data['username']:
 			if c.lower() not in valid_chars:
 				return {'errno': '1', 'message': "Nome de usuário pode conter apenas letras, números, e os caracteres '.', '-' e '_'."}	
     		
-		user = env['bthinker.usuario'].sudo().search([('username', '=', username)])
+		user = env['bthinker.usuario'].sudo().search([('username', '=', data['username'])])
 		if user:
-			return {'errno': '1', 'message': "Nome de usuário '%s' indisponível." % username}
+			return {'errno': '1', 'message': "Nome de usuário '%s' indisponível." % data['username']}
 	
-		return {'errno': '0', 'message': "Nome de usuário '%s' está disponível." % username}
+		return {'errno': '0', 'message': "Nome de usuário '%s' está disponível." % data['username']}
 
+
+	# Muda senha do usuário
+	def change_user_password(self, env, data):		
+		
+		if 'username' not in data:
+			return {'errno': '1', 'message': "Nome de usuário não informado."}
+		
+		if len(data['username'].strip()) <= 0:
+			return {'errno': '1', 'message': "Nome de usuário não pode ser vazio."}					
+    		
+		user = env['bthinker.usuario'].sudo().search([('username', '=', data['username'])])
+		
+		if not user:
+			return {'errno': '1', 'message': "Nome de usuário não encontrado."}
+		
+		user.send_password_change_email()
+	
+		return {'errno': '0', 'message': "Em e-mail foi enviado para %s." % StringUtils.maskEmail(user.email)}
+
+
+	# Salvar cadastro de novo usuário
+	def update_user_password(self, env, data):
+		try:
+			fields_to_check = {
+				'senha': 'Senha',
+				'confirma_senha': 'Confirmação de Senha',
+				'hash' : 'Hash de autorização de atualização da senha'
+			}
+
+			# Verificando campos preenchidos
+			for key, value in fields_to_check.items():
+				if key not in data:
+					return {'errno': 1, 'message': 'Parametro %s não informado.' % (value)}
+
+				if len(data[key].strip()) <= 0:
+					return {'errno': 1, 'message': 'Campo %s não pode ser vazio.' % (value)}
+				
+			# Identifica o usuário
+			hash = data['hash']
+			strJson = StringUtils.fromBase64(hash)
+			user_data = StringUtils.jsonToDict(strJson)
+
+			user = env['bthinker.usuario'].sudo().search([('username', '=', user_data['user']), ('hash_validacao', '=', user_data['hash'])])
+			if not user:
+				return {'errno': 1, 'message': "Sua conta não foi encontrada."}
+			
+			# Verificando senhas iguais
+			if data['senha'] != data['confirma_senha']:
+				return {'errno': 1, 'message': 'Senha e Confirmação de Senha devem ser iguais.'}
+			
+			
+			# Atualiza a senha												
+			user.sudo().write({'senha': data['senha']})
+
+			env.cr.commit()
+			return {'errno': 0, 'message': 'Dados salvos com sucesso!'}
+	
+		except Exception as err:
+			env.cr.rollback()
+			return {'errno': 500, 'message': err}	
 	
 	# Salvar cadastro de novo usuário
 	def save_user_profile(self, env, data):
@@ -270,7 +382,8 @@ class HttpPublicoController(http.Controller):
 				'email': 'E-Mail',
 				'celular': 'Celular',
 				'senha': 'Senha',
-				'confirma_senha': 'Confirmação de Senha'
+				'confirma_senha': 'Confirmação de Senha',
+				'hash': 'Hash de Autorização de Cadastro'
 			}
 
 			# Verificando campos preenchidos
@@ -313,16 +426,36 @@ class HttpPublicoController(http.Controller):
 			}
 												
 			user = env["bthinker.usuario"].sudo().create(vals)
-			user.send_enroll_mail()
+			user.action_send_enroll_mail()
+
+			convite = env['bthinker.convite_usuario'].sudo().search([('guid', '=', data['hash'])])
+			if not convite:
+				return {'errno': '1', 'message': "Hash de autoriação de cadastro não encontrado."}	
+			
+			convite.unlink()
+
+			env.cr.commit()
 			return {'errno': 0, 'message': 'Dados salvos com sucesso!'}
 	
 		except Exception as err:
+			env.cr.rollback()
 			return {'errno': 500, 'message': err}
 	
 
 	# Cria uma nova visita
+	
 	def save_new_visit(self, env, data):
 		try:
+			user_data = http.request.session['user']
+			
+			user = env['bthinker.usuario'].sudo().search([
+				('username', '=', user_data['user']), 
+				('hash_validacao', '=', user_data['hash'])
+			])
+
+			if not user:
+				return {'errno': 1, 'message': 'Sessão inválida. Faça login novamente.'}
+
 			if 'nome_visitante' not in data:
 				return {'errno': 1, 'message': 'Nome do visitante não informado.'}
 
@@ -346,21 +479,20 @@ class HttpPublicoController(http.Controller):
 				return {'errno': 1, 'message': 'Limite de utilização não informado.'}
 			
 			# Criando usuário na base
-			chave = env['bthinker.chave'].sudo().create({'tipo':'visitor'})
+			chave = env['bthinker.chave'].sudo().create({'tipo':'visitor'})			
 
-			user_id = http.request.session['user_id']
 			vals = {
-				'usuario_id': user_id,
+				'usuario_id': user.id,
 				'nome_visitante': data['nome_visitante'],
 				'duracao': data['duracao'],
-				'usa_uma_vez': data['usa_uma_vez'],
+				'usa_uma_vez': (data['usa_uma_vez'] == "1"),
 				'chave_id': chave.id,
 				'executado': False,
 				'finalizado': False
 			}
 												
 			visita = env["bthinker.visita"].sudo().create(vals)					
-			chave.write({'visita_id': visita.id});
+			chave.sudo().write({'visita_id': visita.id})
 			
 			url = http.request.httprequest.host_url.replace("http:", "https:")
 			if url.endswith('/'):
@@ -370,17 +502,58 @@ class HttpPublicoController(http.Controller):
 
 			_logger.info("URL VISITA: %s" % url)
 
+			env.cr.commit()
 			return {'errno': 0, 'visitor':visita.nome_visitante.upper(), 'user': visita.usuario_id.nome.upper(), 'url': url}
 		
 		except Exception as ex:
+			env.cr.rollback()
+			_logger.info(ex)
+			return {'errno': 1, 'message': 'Acesso negado.'}
+		
+	
+	def save_new_user_invite(self, env, data):
+		try:
+			user_data = http.request.session['user']
+			
+			user = env['bthinker.usuario'].sudo().search([
+				('username', '=', user_data['user']), 
+				('hash_validacao', '=', user_data['hash'])
+			])
+
+			if not user:
+				return {'errno': 1, 'message': 'Sessão inválida. Faça login novamente.'}
+
+			if 'contrato_convite_id' not in data:
+				return {'errno': 1, 'message': 'Contrato não informado.'}			
+			
+			
+			contrato = env['bthinker.contrato'].sudo().search([('id', '=', data['contrato_convite_id'])])
+			if not contrato:
+				return {'errno': 1, 'message': 'Contrato não localizado para crição do convite.'}
+
+			# Criando usuário na base
+			convite = env['bthinker.convite_usuario'].sudo().create({'usuario_id' : user.id, 'contrato_id' : contrato.id})
+			
+			url = http.request.httprequest.host_url.replace("http:", "https:")
+			if url.endswith('/'):
+				url = url[:-1]
+
+			# Validade 24 horas, mas aqui, decontando o tz -300 na string apenas
+			limit_time = convite.create_date + datetime.timedelta(hours=21)
+			str_date = limit_time.strftime('%d/%m/%Y %H:%M')
+			url = "%s/virtualkey/cadastro?hash=%s" % (url, convite.guid)
+
+			_logger.info("URL CADASTRO: %s" % url)
+
+			env.cr.commit()
+			return {'errno': 0, 'url': url, 'date' : str_date}
+		
+		except Exception as ex:
+			env.cr.rollback()
+			_logger.info(ex)
 			return {'errno': 1, 'message': 'Acesso negado.'}
 
-	
-	
-	def open_door_by_pin(self, env, data):
-		data['require_pin'] = True
-		return self.auth_key_door(env, data)
-	
+
 	
 	def auth_key_door(self, env, data):
 		_logger.info("auth_key_door: %s" % data)
@@ -396,15 +569,7 @@ class HttpPublicoController(http.Controller):
 
 			if len(data["door"].strip()) <= 0:
 				return {'errno': 1, 'message': 'Porta não pode ser vazio.'}
-			
-			# tratamento para solicitação de abertura remota
-			if 'require_pin' in data:
-				if 'pin' not in data:
-					return {'errno': 1, 'message': 'PIN não informado.'}
-
-				if len(data["pin"].strip()) <= 0:
-					return {'errno': 1, 'message': 'PIN não pode ser vazio.'}
-							
+										
 
 			porta = env['bthinker.porta'].sudo().search([('guid', '=', data['door'])])
 			if not porta:
@@ -428,12 +593,15 @@ class HttpPublicoController(http.Controller):
 			usuario = None
 			if chave.visita_id:
 				
-				# tratamento para solicitação de abertura remota
-				if 'require_pin' in data:
-					return {'errno': '1', 'message': "Não é permitida abertura remota em visitas."}
-
 				if chave.visita_id.usuario_id:
 					usuario = chave.visita_id.usuario_id
+				
+
+				if chave.visita_id.finalizado:
+					return {'errno': '1', 'message': "Visita já finalizada"}
+				
+				if chave.visita_id.usa_uma_vez and chave.visita_id.executado:
+					return {'errno': '1', 'message': "Chave de visita já utilizada."}
 
 				current_time = datetime.datetime.now()
 				limit_time = chave.visita_id.create_date + datetime.timedelta(hours=chave.visita_id.duracao)
@@ -444,36 +612,36 @@ class HttpPublicoController(http.Controller):
 
 			elif chave.usuario_id:
 				usuario = chave.usuario_id
-				
-				# tratamento para solicitação de abertura remota
-				if 'require_pin' in data:
-					if usuario.pin_abertura != int(data['pin']):
-						return {'errno': '1', 'message': "PIN de abertura remota incorreto."}
-			
+
+
 			#Identificação do usuário
 			if not usuario:
 				return {'errno': '1', 'message': "Usuário não identificado para a chave informada"}
 
 			# o que une porta e usuário é o contrato
+			# então, verificamos se existe relação entre o usuário e a porta
 			contrato = env['bthinker.contrato'].sudo().search([('porta_ids', 'in', porta.id), ('usuario_ids', 'in', usuario.id)])
 			if not contrato:
 				return {'errno': '1', 'message': "Não foi encontrada relação para o par Chave/Porta."}
 			
 
+			# Gravação de Logs de Acesso e tratativas finais
 			# se é chave de visita
-			#if chave.visita_id:				
-			#	chave.visita_id.write({'executado':True, 'finalizado': chave.visita_id.usa_uma_vez})
+			if chave.visita_id:				
+				chave.visita_id.write({'executado':True, 'finalizado': chave.visita_id.usa_uma_vez})
 				
 			
 			#if chave.usuario_id:
 				# grava acesso
 							
-			data = self.call_esp_server(porta.guid)			
+			data = self.call_esp_server(env, porta)			
 			_logger.info("ESP DATA: %s" % data)
 
 			if data['errno'] != "0":
 				return {'errno': data['errno'], 'message': data['message']}
 			
+			# Atualiza data de ultima utilização da chave
+			chave.sudo().write({'ultimo_uso' : datetime.datetime.now() })
 			return {'errno': '0', 'message': "Acesso liberado."}
 
 		except Exception as ex:
@@ -481,14 +649,17 @@ class HttpPublicoController(http.Controller):
 	
 
 
-	def call_esp_server(self, porta_guid):
-		url = 'http://localhost:8200/qrdoor/openDoor'  # URL do servidor externo
+	def call_esp_server(self, env, porta):
+		door_server_url = env['ir.config_parameter'].sudo().get_param('bthinker_qrdoor.door_server_url')
+
+		url = '%s/openDoor' % door_server_url
 		headers = {
 			'Content-Type': 'application/json',
 		}
 		
 		payload = {
-			'door': porta_guid,
+			'door': porta.guid,
+			'comm': porta.tipo_comunicacao
 		}
 		response = requests.post(url, json=payload, headers=headers)
 		response.raise_for_status()  # Verifica se a requisição foi bem-sucedida

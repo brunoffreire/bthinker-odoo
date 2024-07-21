@@ -24,10 +24,19 @@ class StringUtils:
         byte_data = base64.b64decode(base64_data)
         string_decoded = byte_data.decode('utf-8')
         return string_decoded
-    	
+        
     def dictToJson(dict_data):
         return json.dumps(dict_data)
 
     @staticmethod
     def jsonToDict(json_data):
         return json.loads(json_data)
+    
+    def maskEmail(email):
+        usuario, dominio = email.split('@')
+        usuario_mascarado = usuario[0] + '*' * (5)
+        dominio_nome, dominio_extensao = dominio.split('.')
+        dominio_mascarado = dominio_nome[0] + '*' * (5)
+        email_mascarado = usuario_mascarado + '@' + dominio_mascarado + '.' + dominio_extensao
+        
+        return email_mascarado

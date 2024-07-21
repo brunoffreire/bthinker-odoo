@@ -23,9 +23,21 @@ class porta(models.Model):
 	
 	contrato_id = fields.Many2one('bthinker.contrato',  string="Contrato Vinculado", required=True)
 	nome = fields.Char(string="Nome", required=True)
-	guid = fields.Char(string="GUID", required=True)	
+	guid = fields.Char(string="GUID", required=True)
+	tipo_comunicacao = fields.Selection([
+		('tcp', 'TCP/IP'),
+		('serial', 'Serial'),
+	], string="Tipo de Comunicação", default='serial', required=True)
+
 	firmware_file = fields.Binary(string="Firmware")
+	usuario_ids = fields.Many2many("bthinker.usuario", string="Usuários da Porta")
     
+	def name_get(self):
+		result = []
+		for record in self:
+			name = "{}".format(record.nome)
+			result.append((record.id, name))
+		return result
 	
 	@api.model
 	def default_get(self, fields_list):
@@ -37,8 +49,9 @@ class porta(models.Model):
 	
 	
 	def action_fire_firmware_update(self):
+		server_url = self.env['ir.config_parameter'].sudo().get_param('bthinker_qrdoor.door_server_url')
 		for rec in self:
-			url = 'http://localhost:8200/qrdoor/updateFirmware'  # URL do servidor externo
+			url = 'http://%s/updateFirmware' % server_url # URL do servidor externo
 			headers = {
 				'Content-Type': 'application/json',
 			}
