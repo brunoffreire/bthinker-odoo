@@ -1,0 +1,43 @@
+<odoo>
+	<data>
+		<record model="ir.actions.act_window" id="bthinker_qrdoor.module_config_action">
+			<field name="name">Configurações do Módulo</field>
+			<field name="res_model">res.config.settings</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_id" ref="base.res_config_settings_view_form"/>
+			<field name="view_mode">form</field>
+			<field name="target">inline</field>
+			<field name="context">{'module':'bthinker_qrdoor'}</field>       
+		</record>
+
+		<!-- Add in configuration items -->
+		<record id="res_config_view_name_form" model="ir.ui.view">
+			<field name="name">res.config.view.name.form</field>
+			<field name="model">res.config.settings</field>
+			<field name="inherit_id" ref="base.res_config_settings_view_form" />
+			<field name="arch" type="xml">
+				<xpath expr="//div[hasclass('settings')]" position="inside">
+					<div class="app_settings_block" data-string="B-Thinker QRDoor" string="B-Thinker QRDoor" data-key="bthinker_qrdoor" groups="base.group_user">
+						<h2>Servidor de Portas B-Thinker</h2>
+						<div class="row mt16 o_settings_container">
+							<div class="col-12 col-lg-12 o_setting_box">															
+								<div class="o_setting_right_pane">
+									<span class="o_form_label">URL Servidor de Portas</span>
+									<div>
+										<field name="door_server_url" class="oe_inline"/>
+									</div>
+								</div>
+								<div class="o_setting_right_pane">
+									<span class="o_form_label">URL de Callback Servidor de Portas</span>
+									<div>
+										<field name="door_server_callback_url" class="oe_inline"/>
+									</div>
+								</div>								
+							</div>
+						</div>						
+					</div>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

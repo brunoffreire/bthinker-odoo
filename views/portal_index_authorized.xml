@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_index_authorized" name="Login Autorizado">
+
+		<div class="container">
+			<div class="row d-flex">
+				<div class="menuitem centered three columns">
+					<a class="selected" id="btn_page_0" name="btn_page" onclick="showPage(0)">
+						<i class="menu-icon fas fa-qrcode"></i> QRCode
+					</a>
+				</div>
+				<div class="menuitem centered three columns">
+					<a id="btn_page_1" name="btn_page" onclick="showPage(1)">
+						<i class="menu-icon fas fa-lock-open"></i> Portas
+					</a>
+				</div>
+				<div class="menuitem centered three columns">
+					<a id="btn_page_2" name="btn_page" onclick="showPage(2)">
+						<i class="menu-icon fas fa-user-clock"></i> Visita
+					</a>
+				</div>
+			</div>
+			<t t-if="user.tipo == 'admin'">
+				<div class="row d-flex">
+					<div class="menuitem centered nine columns">
+						<a id="btn_page_3" name="btn_page" onclick="showPage(3)">
+							<i class="menu-icon fas fa-user-tie"></i> Administração
+						</a>
+					</div>
+				</div>
+			</t>
+		</div>
+
+		<div class="container">
+
+			<div id="page_0" class="row centered">
+				<div class="twelve columns">
+					<p class="centered">Utilize a câmera do seu dispositivo para ler o QRCode da porta.</p>
+				</div>
+
+				<div id="canvas-container">
+					<canvas id="canvas"></canvas>
+				</div>
+				<div id="mensagem">
+
+				</div>
+			</div>
+
+			<div id="page_1" class="d-none">
+				<div class="container">
+					<h3 class="centered">Abertura Remota</h3>
+					<t t-foreach="user.contrato_ids" t-as="contrato">
+						<div class="centered">
+							<h4>
+								<t t-esc="contrato.partner_id.name"/>
+							</h4>
+							<t t-foreach="contrato.porta_ids" t-as="porta">
+								<div class="row">
+									<button type="button" class="button button-door" t-att-data-value="porta.guid">
+										<t t-esc="porta.nome"/>
+										<i class="door-button-icon fas fa-lock-open"></i>
+									</button>
+								</div>
+							</t>
+						</div>
+					</t>
+				</div>
+			</div>
+
+			<div id="page_2" class="d-none">
+				<div class="container">
+					<h3 class="centered">Visita</h3>
+					<form id="form" method="post">
+						<div id="row_fields" class="row">
+							<div class="twelve columns">
+								<label for="visitante">Nome do Visitante</label>
+								<input class="twelve columns" type="text" id="nome_visitante" placeholder="João da Silva" required="1"/>
+
+								<label for="duracao">Duração</label>
+								<input type="number" id="duracao" required="1"/>
+								<span> horas (01 a 24)</span>
+							</div>
+						</div>
+						<div id="row_checkbox" class="row">
+							<div class="twelve columns">
+								<input type="checkbox" id="usa_uma_vez"/>
+								<span>Permitir apenas uma utilização</span>
+							</div>
+						</div>
+						<div id="row_help" class="row">
+							<div class="twelve columns">
+								<p>
+									<b>Duração:</b> O link da visita será válido pelo período de tempo informado, a contar do momento do seu cadastro.</p>
+								<p>
+									<b>Permitir apenas uma utilização:</b> O link da visita será invalidado assim que o visitante utilizá-lo.</p>
+							</div>
+						</div>
+						<div id="row_share" class="twelve columns centered">
+							<button type="button" class="button-primary" id="btn_new_visit">
+								<i class="button-icon fas fa-share-nodes"></i> Compartilhar
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			<t t-if="user.tipo == 'admin'">
+				<div id="page_3" class="d-none">
+					<div class="container">
+						<div class="centered">
+							<h4>Convidar Usuários</h4>
+							<div id="row_invite" class="twelve columns centered">
+								<t t-if="len(user.contrato_ids) == 1">
+									<input type="hidden" id="contrato_convite_id" t-att-value="user.contrato_ids[0].id"/>
+								</t>
+								<t t-else="">
+									<p>Contrato Associado</p>
+									<select id="contrato_convite_id">
+										<t t-foreach="user.contrato_ids" t-as="contrato">
+											<option t-att-value="contrato.id">
+												<t t-esc="contrato.nome"/>
+											</option>
+										</t>
+									</select>
+									<br/>
+									<br/>
+								</t>
+								<button type="button" class="button-primary" id="btn_invite_user">
+									<i class="button-icon fas fa-share-nodes"></i> Enviar link de convite
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</t>
+		</div>
+	</template>
+</odoo>

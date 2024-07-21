@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_muda_senha" name="Alteração de Senha">
+		<t t-call="bthinker_qrdoor.portal_layout">
+			<t t-set="timestamp" t-value="int(time.time())"/>
+			<t t-set="portal_head">
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-muda_senha.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-muda_senha.css?key={}'.format(timestamp)" rel="stylesheet"/>
+			</t>
+			<t t-set="body_class" t-value="'bg-white-200'"/>
+			<t t-set="portal_body">
+
+				<t t-if="errno == 1">
+					<p><t t-esc="message"/></p>
+				</t>
+				<t t-else="">
+					<div class="container">
+						<h3 class="centered">Redefinição de Senha</h3>
+						<form id="form" method="post">
+							<div id="row_fields" class="row">
+								<div class="twelve columns">
+									<label for="senha">Senha</label>
+									<input class="twelve columns" type="password" id="senha" required="1"/>
+
+									<label for="confirma_senha">Confirmação de Senha</label>
+									<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
+								</div>
+							</div>
+							<div id="row_save_button" class="twelve columns centered">
+								<button type="button" class="button-primary" id="btn_save">Confirmar</button>
+							</div>
+						</form>
+					</div>
+				</t>
+			</t>
+		</t>
+	</template>
+</odoo>
