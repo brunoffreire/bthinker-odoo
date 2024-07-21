@@ -57,7 +57,9 @@ class usuario(models.Model):
 
 	@api.model
 	def create(self, vals):
-		
+		if 'username' in vals:
+			vals['username'] = vals['username'].lower()
+			
 		if 'senha' in vals:
 			vals['senha'] = StringUtils.str2md5(vals['senha'])
 
@@ -73,6 +75,9 @@ class usuario(models.Model):
 	
 
 	def write(self, vals):
+		if 'username' in vals:
+			vals['username'] = vals['username'].lower()
+		
 		if 'senha' in vals:
 			vals['senha'] = StringUtils.str2md5(vals['senha'])
 

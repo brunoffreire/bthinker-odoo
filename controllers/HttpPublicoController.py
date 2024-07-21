@@ -186,7 +186,7 @@ class HttpPublicoController(http.Controller):
 					break
 				
 				senha = StringUtils.str2md5(data['senha'])
-				user = env['bthinker.usuario'].sudo().search([('username', '=', data['username'])])
+				user = env['bthinker.usuario'].sudo().search([('username', '=', data['username'].lower())])
 				if not user:
 					erro = {'errno': 1, 'message': 'Usuário não encontrado ou senha incorreta.'}
 					break
@@ -249,7 +249,7 @@ class HttpPublicoController(http.Controller):
 						erro =  {'errno': 1, 'message': '%s não pode ser vazio.' % value}
 						break
 				
-				user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
+				user = env['bthinker.usuario'].sudo().search([('username', '=', data['user'].lower()), ('hash_validacao', '=', data['hash'])])
 				if not user:
 					erro =  {'errno': 1, 'message': 'Usuário não encontrado ou hash incorreta.'}
 					break
