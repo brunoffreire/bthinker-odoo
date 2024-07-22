@@ -26,8 +26,7 @@ function hash_login_callback(data) {
 }
 
 function set_index_page_controls() {
-  const holdTime = 2000;
-
+  
   $(".button-door").on("mousedown touchstart", function (e) {
     const $button = $(this);
     let progress = 0;
@@ -36,7 +35,7 @@ function set_index_page_controls() {
     e.preventDefault();
 
     progressInterval = setInterval(function () {
-      progress += 100 / (holdTime / 100);
+      progress += 15;
       $button.css(
         "background",
         `linear-gradient(to right, green ${progress}%, transparent ${progress}%)`
@@ -47,10 +46,10 @@ function set_index_page_controls() {
         openByHolding($button);
         $button.css(
           "background",
-          "linear-gradient(to right, green 0%, transparent 0%)"
+          "linear-gradient(to right, green 100%, transparent 100%)"
         );
       }
-    }, 100);
+    }, 500);
 
     $button.on(
       "mouseup mouseleave touchend touchcancel",
