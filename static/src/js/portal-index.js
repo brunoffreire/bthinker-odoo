@@ -137,6 +137,7 @@ function showPage(index) {
   $("#page_0").addClass("d-none");
   $("#page_1").addClass("d-none");
   $("#page_2").addClass("d-none");
+  $("#page_3").addClass("d-none");
   $("#page_" + index).removeClass("d-none");
 
   $("a[name='btn_page']").removeClass();
