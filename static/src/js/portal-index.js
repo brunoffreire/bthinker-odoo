@@ -153,12 +153,16 @@ function openByHolding(obj) {
     door: $(obj).attr("data-value"),
   };
 
-  callServer("auth_key_door", data, openByHolding_callback);
+  callServer("auth_key_door", data, openByHolding_callback, obj);
 }
 
-function openByHolding_callback(data) {
+function openByHolding_callback(data, obj) {
   if (data.result.errno != "0") {
     alert(data.result.message);
+    $(obj).css(
+      "background",
+      "linear-gradient(to right, green 100%, transparent 100%)"
+    );
     return;
   }
 
