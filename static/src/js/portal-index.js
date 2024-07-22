@@ -89,8 +89,7 @@ function set_index_page_controls() {
     $("#mensagem").text(data.result.message);
   };
 
-  const scanner = new QRScanner("canvas");
-  scanner.initCamera();
+  showPage(1);  
 }
 
 function save_new_visit_callback(data) {
@@ -141,6 +140,11 @@ function showPage(index) {
 
   $("a[name='btn_page']").removeClass();
   $("#btn_page_" + index).addClass("selected");
+
+  if(index == 0){
+    const scanner = new QRScanner("canvas");
+    scanner.initCamera();
+  }
 }
 
 function openByHolding(obj) {
