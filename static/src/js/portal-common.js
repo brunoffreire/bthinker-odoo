@@ -26,7 +26,7 @@ function share(title, text, url, callback) {
 // Chamadas ao servidor
 /********************************************************************** */
 
-function callServer(endpoint, params, callback, ctx) {
+function callServer(endpoint, params, callback, ctx = null) {
 	
 	$.ajax({
 		url: "/api/" + endpoint,

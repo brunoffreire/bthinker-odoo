@@ -18,6 +18,7 @@
       <field name="arch" type="xml">
         <tree>
           <field name="partner_id"/>
+          <field name="host_servidor_porta"/>
           <field name="state"/>
         </tree>
       </field>
@@ -36,6 +37,7 @@
               <group>
                 <separator string="Dados Gerais"/>
                 <field name="partner_id"/>
+                <field name="host_servidor_porta"/>
               </group>              
             </group>
             <notebook>

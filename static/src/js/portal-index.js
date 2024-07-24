@@ -26,9 +26,14 @@ function hash_login_callback(data) {
 }
 
 function set_index_page_controls() {
-  
-  $(".button-door").on("mousedown touchstart", function (e) {
+
+  $(".button-door-offline").on("click", function (e) {
+    alert("Porta indisponível neste momento.")
+  });
+
+  $(".button-door-online").on("mousedown touchstart", function (e) {
     const $button = $(this);
+
     let progress = 0;
     let progressInterval;
 
@@ -38,7 +43,7 @@ function set_index_page_controls() {
       progress += 15;
       $button.css(
         "background",
-        `linear-gradient(to right, green ${progress}%, transparent ${progress}%)`
+        `linear-gradient(to right, green ${progress}%, #33C3F0 ${progress}%)`
       );
 
       if (progress >= 100) {
@@ -46,7 +51,7 @@ function set_index_page_controls() {
         openByHolding($button);
         $button.css(
           "background",
-          "linear-gradient(to right, green 100%, transparent 100%)"
+          "linear-gradient(to right, green 100%, #33C3F0 100%)"
         );
       }
     }, 500);
@@ -57,7 +62,7 @@ function set_index_page_controls() {
         clearInterval(progressInterval);
         $button.css(
           "background",
-          "linear-gradient(to right, green 0%, transparent 0%)"
+          "linear-gradient(to right, green 0%, #33C3F0 0%)"
         );
         $button.off("mouseup mouseleave", resetButton);
       }
@@ -89,7 +94,7 @@ function set_index_page_controls() {
     $("#mensagem").text(data.result.message);
   };
 
-  showPage(1);  
+  showPage(1);
 }
 
 function save_new_visit_callback(data) {
@@ -119,7 +124,9 @@ function save_new_user_invite_callback(data) {
   share(
     "Convite para Cadastro",
     "Este é o seu link de cadastro do sistema de automação de portaria.\n\n" +
-    "Validade do link: "+ data.result.date +".\n\n",
+      "Validade do link: " +
+      data.result.date +
+      ".\n\n",
     data.result.url,
     null
   );
@@ -141,7 +148,7 @@ function showPage(index) {
   $("a[name='btn_page']").removeClass();
   $("#btn_page_" + index).addClass("selected");
 
-  if(index == 0){
+  if (index == 0) {
     const scanner = new QRScanner("canvas");
     scanner.initCamera();
   }
@@ -157,12 +164,10 @@ function openByHolding(obj) {
 }
 
 function openByHolding_callback(data, obj) {
+  $(obj).css("background", "linear-gradient(to right, green 0%, #33C3F0 0%)");
+
   if (data.result.errno != "0") {
     alert(data.result.message);
-    $(obj).css(
-      "background",
-      "linear-gradient(to right, green 100%, transparent 100%)"
-    );
     return;
   }
 

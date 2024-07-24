@@ -11,12 +11,12 @@ def post_init_hook(cr, registry):
 	_logger.info("Iniciando rotinas POST_INIT_HOOK")
 
 	#_logger.info("Criando indices de tabelas em banco de dados")
-	#cr.execute('DROP INDEX IF EXISTS zkmango_pushcommand_sn_seq_priority_result_index')
-	#cr.execute('CREATE INDEX zkmango_pushcommand_sn_seq_priority_result_index ON zkmango_pushcommand (serial, sequence, priority desc, result NULLS FIRST)')
+	#cr.execute('DROP INDEX IF EXISTS pushcommand_sn_seq_priority_result_index')
+	#cr.execute('CREATE INDEX pushcommand_sn_seq_priority_result_index ON pushcommand (serial, sequence, priority desc, result NULLS FIRST)')
 
 	# Other odoo modules check for the index existence before calling the create index command.
 	# Personal question: Since we call "DROP INDEX IF EXISTS" right before index creation, do we really need to check??	
-	# cr.execute('SELECT indexname FROM pg_indexes WHERE indexname = %s', ('zkmango_pushcommand_sn_seq_priority_result_index'))
+	# cr.execute('SELECT indexname FROM pg_indexes WHERE indexname = %s', ('pushcommand_sn_seq_priority_result_index'))
 	# if not cr.fetchone():
 	
 	return

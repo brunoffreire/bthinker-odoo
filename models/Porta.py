@@ -24,11 +24,11 @@ class porta(models.Model):
 	contrato_id = fields.Many2one('bthinker.contrato',  string="Contrato Vinculado", required=True)
 	nome = fields.Char(string="Nome", required=True)
 	guid = fields.Char(string="GUID", required=True)
-	tipo_comunicacao = fields.Selection([
-		('tcp', 'TCP/IP'),
-		('serial', 'Serial'),
-	], string="Tipo de Comunicação", default='serial', required=True)
-
+	state = fields.Selection([
+		('offline', 'OFFLINE'),
+		('online', 'ONLINE')
+	], string="Status da Porta", default='offline')
+	
 	firmware_file = fields.Binary(string="Firmware")
 	usuario_ids = fields.Many2many("bthinker.usuario", string="Usuários da Porta")
     

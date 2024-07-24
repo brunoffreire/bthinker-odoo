@@ -10,12 +10,10 @@
     width: 75px;
 }
 
-.button-door{
+.button-door-online, .button-door-offline{
     position: relative;
     margin-top: 20px;
-    min-width: 300px;
-    background: linear-gradient(to right, green 0%, transparent 0%);
-    transition: background 0s;    
+    min-width: 300px;    
 }
 
 .door-button-icon{
@@ -40,3 +38,7 @@ a.selected{
     color: #FFF !important;
 }
 
+#page_1 h4{
+    margin-top: 20px !important;
+    margin-bottom: 0px !important;
+}

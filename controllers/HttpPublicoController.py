@@ -272,22 +272,61 @@ class HttpPublicoController(http.Controller):
 					user.sudo().write({"status_ultimo_login": erro['message']})
 					
 				return erro
+			
 
+			# Para cada contrato que o usuário tem acesso:
+			# Atualiza o status das porta que o usuário vai ver em sua lista
+			# para saber se estão online
+			try:
+				
+				payload = []
+				for contrato in user.contrato_ids:
 
-			# Usuário está logado.
-			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao}
+					for porta in contrato.porta_ids:
+						payload.append(porta.guid)
+										
+					try:
+						# tenta falar com o servidor de portas
+						result = self.call_door_server(contrato.host_servidor_porta, 'getDoorStatus', payload)
+						_logger.info("RESULT: %s" % result)
+					except Exception as ex:
+						# falhou na comunicação. Seta portas para off
+						contrato.porta_ids.sudo().write({'state' : 'offline'})
+						continue
 
-			# Obtem as portas que o usuário tem acesso
-			env = http.request.env			
-			#contrato_ids = user.contrato_ids
+					# Comunicou sem erro. Processa resposta
+					if result['errno'] == 0:
+						for guid, status in result['data'].items():
+							porta = env['bthinker.porta'].sudo().search([('guid', '=', guid)])
+							porta.sudo().write({'state' : 'online' if status == 1 else 'offline'})
+					
+					# Comunicou, mas houve erro. Seta pra offline
+					else:						
+						contrato.porta_ids.sudo().write({'state' : 'offline'})
+						_logger.info("Erro 1: %s" % result['message'])
+				
+				env.cr.commit()
+			except Exception as ex:
+				env.cr.rollback()
+				_logger.info("Erro2: %s" % ex)
+
+			# Usuário está logado. Obtem as portas que o usuário tem acesso
+			contratos = []
+			for contrato in user.contrato_ids:
+				portas = env['bthinker.porta'].sudo().search([('contrato_id', '=', contrato.id), ('usuario_ids', 'in', user.id)])
+				contratos.append({'nome':contrato.partner_id.name, 'portas' : portas})
 			values = {
-				'user': user
+				'user': user,
+				'contratos': contratos
 			}
-		
-			html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_authorized", values)					
+
+			_logger.info("Values: %s" % values)
+			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao}		
+			html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_authorized", values)											
 			return {'errno': 0, 'message' : 'Login por hash bem sucedido.', 'html': html}
 		
 		except Exception as ex:
+			raise ex			
 			return {'errno': 1, 'message': ex}
 		
 		
@@ -636,8 +675,11 @@ class HttpPublicoController(http.Controller):
 			
 			#if chave.usuario_id:
 				# grava acesso
-							
-			data = self.call_esp_server(env, porta)			
+
+			payload = {
+				'door': porta.guid
+			}				
+			data = self.call_door_server(contrato.host_servidor_porta,'openDoor', payload)
 			_logger.info("ESP DATA: %s" % data)
 
 			if data['errno'] != "0":
@@ -652,18 +694,13 @@ class HttpPublicoController(http.Controller):
 	
 
 
-	def call_esp_server(self, env, porta):
-		door_server_url = env['ir.config_parameter'].sudo().get_param('bthinker_qrdoor.door_server_url')
-
-		url = '%s/openDoor' % door_server_url
+	def call_door_server(self, server_host, endpoint, payload):
+		
+		url = 'http://%s:8200/qrdoor/%s' % (server_host, endpoint)
 		headers = {
 			'Content-Type': 'application/json',
-		}
+		}		
 		
-		payload = {
-			'door': porta.guid,
-			'comm': porta.tipo_comunicacao
-		}
 		response = requests.post(url, json=payload, headers=headers)
 		response.raise_for_status()  # Verifica se a requisição foi bem-sucedida
 		response_data = response.json()  # Processa a resposta JSON

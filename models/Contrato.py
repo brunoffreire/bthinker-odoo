@@ -21,6 +21,8 @@ class contrato(models.Model):
 		('active', 'Ativo'),
 	], string="Status do Contrato", default='inactive')
 	
+	host_servidor_porta = fields.Char(string="Hoste do Servidor de Portas do Contrato", default="localhost", required=True)
+	
 	def name_get(self):
 		result = []
 		for record in self:

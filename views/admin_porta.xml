@@ -19,8 +19,8 @@
         <tree>
           <field name="contrato_id"/>
           <field name="nome"/>
+          <field name="state"/>
           <field name="guid"/>
-          <field name="tipo_comunicacao"/>
         </tree>
       </field>
     </record>
@@ -39,8 +39,8 @@
                 <separator string="Dados Gerais"/>
                 <field name="contrato_id"/>
                 <field name="nome"/>
+                <field name="state"/>
                 <field name="guid"/>
-                <field name="tipo_comunicacao"/>
                 <field name="firmware_file"/>                
               </group>
             </group>

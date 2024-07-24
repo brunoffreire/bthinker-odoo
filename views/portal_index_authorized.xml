@@ -49,17 +49,25 @@
 			<div id="page_1" class="d-none">
 
 				<h3 class="centered">Abertura Remota</h3>
-				<t t-foreach="user.contrato_ids" t-as="contrato">
+				<t t-foreach="contratos" t-as="contrato">
 					<div class="centered">
 						<h4>
-							<t t-esc="contrato.partner_id.name"/>
+							<t t-esc="contrato['nome']"/>
 						</h4>
-						<t t-foreach="contrato.porta_ids" t-as="porta">
+						<t t-foreach="contrato['portas']" t-as="porta">
 							<div class="row">
-								<button type="button" class="button button-door" t-att-data-value="porta.guid">
-									<t t-esc="porta.nome"/>
-									<i class="door-button-icon fas fa-lock-open"></i>
-								</button>
+								<t t-if="porta.state == 'online'">
+									<button type="button" class="button-primary button-door-online" t-att-data-value="porta.guid">
+										<t t-esc="porta.nome"/>
+										<i class="door-button-icon fas fa-lock-open"></i>
+									</button>
+								</t>
+								<t t-else="">
+									<button type="button" class="button button-door-offline" t-att-data-value="porta.guid">
+										<t t-esc="porta.nome"/>
+										<i class="door-button-icon fas fa-ban"></i>
+									</button>
+								</t>
 							</div>
 						</t>
 					</div>

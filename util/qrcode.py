@@ -25,7 +25,7 @@ class QRCode:
 
 		if include_logo:
 			if not logo_image:
-				image_path = modules.module.get_resource_path('zkmango','static/img','zk-logo-qrcode.png')
+				image_path = modules.module.get_resource_path('bthinker','static/img','logo-qrcode.png')
 				logo_image = Image.open(image_path)
 
 		if logo_image:
