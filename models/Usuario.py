@@ -42,7 +42,7 @@ class usuario(models.Model):
 	], string="Status da Conta", default='unchecked')
 
 	hash_validacao = fields.Char(string="Hash para validação de e-mail")
-	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="set null", readonly=True)	
+	chave_id = fields.Many2one("bthinker.chave", string="Chave", ondelete="cascade", readonly=True)	
 	contrato_ids = fields.Many2many('bthinker.contrato', string='Contratos')
 	status_ultimo_login = fields.Char(string="Status do último Login", readonly=True)	
 	porta_ids = fields.Many2many("bthinker.porta", string="Portas do Usuário", domain="[('contrato_id', 'in', contrato_ids)]")

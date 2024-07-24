@@ -115,13 +115,15 @@ class HttpPublicoController(http.Controller):
 		
 		errno = 0
 		message = "Sua conta foi verificada com sucesso!"
-		env = http.request.env
+		env = http.request.env		
 
 		try:	
 			params = http.request.params
 			hash = params.get('hash')
 			strJson = StringUtils.fromBase64(hash)
 			data = StringUtils.jsonToDict(strJson)
+
+			_logger.info("VALIDACAO: %s" % data)
 
 			user = env['bthinker.usuario'].sudo().search([('username', '=', data['user']), ('hash_validacao', '=', data['hash'])])
 			if not user:
@@ -326,7 +328,6 @@ class HttpPublicoController(http.Controller):
 			return {'errno': 0, 'message' : 'Login por hash bem sucedido.', 'html': html}
 		
 		except Exception as ex:
-			raise ex			
 			return {'errno': 1, 'message': ex}
 		
 		

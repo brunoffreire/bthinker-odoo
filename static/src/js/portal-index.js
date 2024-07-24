@@ -2,6 +2,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
   hash_login();
 });
 
+function openMenu() {
+  $("#sideMenu").css("left", "0");
+}
+
+function closeMenu() {
+  $("#sideMenu").css("left", "-250px");
+}
+
 function hash_login() {
   let user = localStorage.getItem("user");
   let hash = localStorage.getItem("hash");
@@ -28,7 +36,11 @@ function hash_login_callback(data) {
 function set_index_page_controls() {
 
   $(".button-door-offline").on("click", function (e) {
-    alert("Porta indisponível neste momento.")
+    Swal.fire({
+      title: "Aviso",
+      text: "Porta indisponível no momento.",
+      icon: "warning"
+    });
   });
 
   $(".button-door-online").on("mousedown touchstart", function (e) {
@@ -40,7 +52,7 @@ function set_index_page_controls() {
     e.preventDefault();
 
     progressInterval = setInterval(function () {
-      progress += 15;
+      progress += 18;
       $button.css(
         "background",
         `linear-gradient(to right, green ${progress}%, #33C3F0 ${progress}%)`
@@ -99,7 +111,11 @@ function set_index_page_controls() {
 
 function save_new_visit_callback(data) {
   if (data.result.errno != "0") {
-    alert(data.result.message);
+    Swal.fire({
+      title: "Erro",
+      text: data.result.message,
+      icon: "error",
+    });
     return;
   }
   share(
@@ -118,7 +134,11 @@ function save_new_visit_callback(data) {
 
 function save_new_user_invite_callback(data) {
   if (data.result.errno != "0") {
-    alert(data.result.message);
+    Swal.fire({
+      title: "Erro",
+      text: data.result.message,
+      icon: "error",
+    });
     return;
   }
   share(
@@ -139,19 +159,33 @@ function visit_share_callback() {
 }
 
 function showPage(index) {
+
   $("#page_0").addClass("d-none");
   $("#page_1").addClass("d-none");
   $("#page_2").addClass("d-none");
   $("#page_3").addClass("d-none");
   $("#page_" + index).removeClass("d-none");
 
-  $("a[name='btn_page']").removeClass();
-  $("#btn_page_" + index).addClass("selected");
-
   if (index == 0) {
-    const scanner = new QRScanner("canvas");
+    $('#canvas-container').empty();
+    var canvas = $('<canvas>', {
+      id: 'canvas'
+    });
+    $('#canvas-container').append(canvas);
+
+    let scanner = new QRScanner("canvas");
     scanner.initCamera();
+    window.scanner = scanner;
   }
+  else{
+    if(window.scanner){
+      window.scanner.stopCamera();      
+    }
+    $('#canvas-container').empty();
+  }
+
+  closeMenu();
+
 }
 
 function openByHolding(obj) {
@@ -167,9 +201,17 @@ function openByHolding_callback(data, obj) {
   $(obj).css("background", "linear-gradient(to right, green 0%, #33C3F0 0%)");
 
   if (data.result.errno != "0") {
-    alert(data.result.message);
+    Swal.fire({
+      title: "Erro",
+      text: data.result.message,
+      icon: "error",
+    });
     return;
   }
 
-  alert("Porta aberta.");
+  Swal.fire({
+    title: "Informação",
+    text: "Porta aberta.",
+    icon: "success"
+  });
 }

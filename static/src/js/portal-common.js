@@ -35,7 +35,11 @@ function callServer(endpoint, params, callback, ctx = null) {
 		contentType: "application/json",
 		data: JSON.stringify(params),
 		error: function () {
-			alert('Erro na comunicação com o servidor.');
+			Swal.fire({
+				title: "Erro",
+				text: "Ocorreu um erro na comunicação com o servidor.",
+				icon: "error"
+			  });
 		},
 		success: function (data) {
 			if (callback != null) {

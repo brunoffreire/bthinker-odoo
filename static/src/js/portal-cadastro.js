@@ -22,6 +22,8 @@ function checkUsername_callback(data){
 
 function save_profile() {
     
+    $('#btn_save').prop('disabled', true);
+    
     var username = $("#username").val();
     var nome = $("#nome").val();
     var email = $("#email").val();
@@ -46,12 +48,25 @@ function save_profile() {
 }
 
 function save_profile_callback(data) {
+    
+    $('#btn_save').prop('disabled', false);
+    
     if (data.result.errno != '0') {        
-        alert("Ocorreu um erro ao gravar.\n" + data.result.message);
+        Swal.fire({
+            title: "Erro ao gravar",
+            text: data.result.message,
+            icon: "error"
+          });
+
         return;
     }
+    
+    Swal.fire({
+        title: "Sucesso",
+        text: "Dados salvos com sucesso! Você receberá um e-mail para confirmar sua conta.",
+        icon: "success"
+      });
 
-    alert("Dados salvos com sucesso!.\nVocê receberá um e-mail para confirmar sua conta.");
     redirect("/virtualkey");
 }
 

@@ -1,8 +1,5 @@
 #canvas {
     width: 100%;    
-}
-
-#canvas{
     background-color: #000;
 }
 
@@ -41,4 +38,62 @@ a.selected{
 #page_1 h4{
     margin-top: 20px !important;
     margin-bottom: 0px !important;
+}
+
+.image-logo{
+    margin-top:5px;
+}
+
+.side-menu {
+    height: 100%;
+    width: 250px; /* Definimos uma largura fixa */
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: -250px; /* Posicionamos fora da tela inicialmente */
+    background-color: #33C3F0;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.side-menu a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 2rem; 
+    color: #FFF;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-menu a:hover {
+    color: #fff;
+}
+
+.side-menu .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    font-size: 2.5rem;
+    margin-left: 50px;
+    color: #FFF;
+}
+
+.side-menu .menu-icon{
+    margin-right:15px;
+}
+
+.open-btn {
+    font-size: 30px;
+    cursor: pointer;
+    position: fixed;
+    top: 10px;
+    left: 15px;
+    color: #33C3F0;
+}
+
+.top-bar{
+    text-align: right;
+    border-bottom: #dedede 1px solid;
+    padding-bottom: 10px;
 }

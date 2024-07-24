@@ -2,33 +2,28 @@
 <odoo>
 	<template id="portal_index_authorized" name="Login Autorizado">
 
-		<div class="container">
-			<div class="row d-flex">
-				<div class="menuitem centered three columns">
-					<a id="btn_page_0" name="btn_page" onclick="showPage(0)">
-						<i class="menu-icon fas fa-qrcode"></i> QRCode
-					</a>
-				</div>
-				<div class="menuitem centered three columns">
-					<a id="btn_page_1" name="btn_page" onclick="showPage(1)">
-						<i class="menu-icon fas fa-lock-open"></i> Portas
-					</a>
-				</div>
-				<div class="menuitem centered three columns">
-					<a id="btn_page_2" name="btn_page" onclick="showPage(2)">
-						<i class="menu-icon fas fa-user-clock"></i> Visita
-					</a>
-				</div>
-			</div>
+		<div id="sideMenu" class="side-menu">
+			<a href="javascript:void(0)" class="close-btn" onclick="closeMenu()">
+				<i class="menu-icon fas fa-xmark"></i>
+			</a>
+			<a href="javascript:showPage(0)">
+				<i class="menu-icon fas fa-qrcode"></i>QRCode</a>
+			<a href="javascript:showPage(1)">
+				<i class="menu-icon fas fa-lock-open"></i>Portas</a>
+			<a href="javascript:showPage(2)">
+				<i class="menu-icon fas fa-user-clock"></i>Visita</a>
 			<t t-if="user.tipo == 'admin'">
-				<div class="row d-flex">
-					<div class="menuitem centered nine columns">
-						<a id="btn_page_3" name="btn_page" onclick="showPage(3)">
-							<i class="menu-icon fas fa-user-tie"></i> Administração
-						</a>
-					</div>
-				</div>
+				<a href="javascript:showPage(3)">
+					<i class="menu-icon fas fa-user-tie"></i>Administração</a>
 			</t>
+			<a href="/virtualkey/logout">
+				<i class="menu-icon fas fa-power-off"></i>Sair</a>
+		</div>
+		<div class="row top-bar">
+			<span class="open-btn" onclick="openMenu()">
+				<i class="menu-icon fas fa-bars"></i>
+			</span>
+			<img class="image-logo" src="/bthinker_qrdoor/static/src/img/logo-bthinker.jpg"/>
 		</div>
 
 		<div class="container">
