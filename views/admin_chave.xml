@@ -19,6 +19,7 @@ Cadastre a primeira chave!
           <field name="nome"/>
           <field name="tipo"/>
           <field name="guid"/>
+          <field name="ultimo_uso"/>
         </tree>
       </field>
     </record>
@@ -35,8 +36,10 @@ Cadastre a primeira chave!
                 
                 <field name="tipo"/>
                 <field name="guid"/>
+                <field name="ultimo_uso"/>
                 <field name="usuario_id"  attrs="{'invisible':[('tipo', '!=', 'user')]}"/>
                 <field name="visita_id"  attrs="{'invisible':[('tipo', '!=', 'visitor')]}"/>
+                
               </group>
             </group>
           </sheet>

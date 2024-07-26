@@ -28,6 +28,7 @@ class chave(models.Model):
 
 	usuario_id = fields.Many2one("bthinker.usuario", string="Usuário", ondelete="set null", readonly=True)
 	visita_id = fields.Many2one("bthinker.visita", string="Visita", readonly=True, ondelete="cascade")
+	ultimo_uso = fields.Datetime(string="Última utilização", readonly=True)
 	
 	def name_get(self):
 		result = []

@@ -4,4 +4,5 @@ from . import Contrato
 from . import Porta
 from . import Usuario
 from . import Visita
+from . import RegistroAcesso
 from . import Settings

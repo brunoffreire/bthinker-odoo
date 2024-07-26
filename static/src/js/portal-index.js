@@ -96,16 +96,7 @@ function set_index_page_controls() {
     };
     callServer("save_new_user_invite", data, save_new_user_invite_callback);
   });
-
-  window.getKey = function () {
-    let key = localStorage.getItem("key");
-    return key;
-  };
-
-  window.doorRequestCallback = function (data) {
-    $("#mensagem").text(data.result.message);
-  };
-
+   
   showPage(1);
 }
 
@@ -164,6 +155,7 @@ function showPage(index) {
   $("#page_1").addClass("d-none");
   $("#page_2").addClass("d-none");
   $("#page_3").addClass("d-none");
+  $("#page_4").addClass("d-none");
   $("#page_" + index).removeClass("d-none");
 
   if (index == 0) {
@@ -173,7 +165,7 @@ function showPage(index) {
     });
     $('#canvas-container').append(canvas);
 
-    let scanner = new QRScanner("canvas");
+    let scanner = new QRScanner("canvas", sendDoorRequest);
     scanner.initCamera();
     window.scanner = scanner;
   }
@@ -188,10 +180,29 @@ function showPage(index) {
 
 }
 
+function sendDoorRequest(door) {
+
+  if(door == ""){
+      return;
+  }
+
+  let key = localStorage.getItem("key");
+  let data = {'door': door,'key': key, 'method': 'qrcode'};
+  callServer("auth_key_door", data, sendDoorRequest_callback);
+  
+} 
+
+function sendDoorRequest_callback(data) {
+  
+  $("#mensagem").text(data.result.message);
+}
+
 function openByHolding(obj) {
+  
   data = {
-    key: window.getKey(),
+    key: localStorage.getItem("key"),
     door: $(obj).attr("data-value"),
+    method: 'remoto'
   };
 
   callServer("auth_key_door", data, openByHolding_callback, obj);

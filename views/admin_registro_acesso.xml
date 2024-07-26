@@ -1,0 +1,54 @@
+<odoo>
+  <data>
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.registro_acesso_action_window">
+      <field name="name">Registro de Acesso</field>
+      <field name="res_model">bthinker.registro_acesso</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.registro_acesso_list">
+      <field name="name">bthinker.registro_acesso.list</field>
+      <field name="model">bthinker.registro_acesso</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="nome_pessoa"/>
+          <field name="usuario_id"/>
+          <field name="porta_id"/>
+          <field name="tipo"/>
+          <field name="metodo"/>
+          <field name="resultado"/>
+          <field name="create_date"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.registro_acesso_form">
+      <field name="name">bthinker.registro_acesso.form</field>
+      <field name="model">bthinker.registro_acesso</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Chave">
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados do Acesso"/>
+
+                <field name="nome_pessoa"/>
+                <field name="usuario_id"/>
+                <field name="porta_id"/>
+                <field name="tipo"/>
+                <field name="metodo"/>
+                <field name="resultado"/>
+                <field name="create_date"/>
+              </group>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>

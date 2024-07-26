@@ -7,6 +7,18 @@
     width: 75px;
 }
 
+#nome_relatorio{
+    width: 230px;
+}
+
+.button-qrcode{
+    position: relative;    
+    min-width: 300px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+
 .button-door-online, .button-door-offline{
     position: relative;
     margin-top: 20px;

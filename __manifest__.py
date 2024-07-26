@@ -38,6 +38,7 @@
         'views/admin_usuario.xml',
         'views/admin_visita.xml',
         'views/admin_menu.xml',
+        'views/admin_registro_acesso.xml',
         'views/admin_settings.xml',        
 		'views/portal_layout.xml',
         'views/portal_index.xml',

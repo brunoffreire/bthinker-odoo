@@ -1,13 +1,14 @@
 // URL da API que retorna dados em formato JSON
 
 class QRScanner {
-  constructor(canvasId) {
+  constructor(canvasId, callback_method = null) {
     this.video = document.createElement("video");
     this.canvasElement = document.getElementById(canvasId);
     this.canvas = this.canvasElement.getContext("2d", {
       willReadFrequently: true,
     });
     this._wait = false;
+    this._callback_method = callback_method;
   }
 
   initCamera() {
@@ -75,25 +76,14 @@ class QRScanner {
           if (code.data.trim().length > 0) {
             this._wait = true;
             setTimeout(() => (this._wait = false), 3000);
-            this.sendDoorRequest(code.data);
+            if(this._callback_method!=null){
+              this._callback_method(code.data);
+            }
           }
         }
       }
     }
-
     requestAnimationFrame(this.tick.bind(this));
-  }
-
-  sendDoorRequest(door) {      
-    if(door == ""){
-        return;
-    }
-
-    let key = window.getKey();
-    let data = {'door': door,'key': key};
-    if(window.doorRequestCallback){
-      callServer("auth_key_door", data, window.doorRequestCallback);
-    }
-  }     
+  }  
 }
 

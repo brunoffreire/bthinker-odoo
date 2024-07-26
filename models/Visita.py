@@ -19,5 +19,4 @@ class visita(models.Model):
 	chave_id  = fields.Many2one("bthinker.chave", string="Chave Associada", required=True, ondelete="cascade")
 	
 	executado = fields.Boolean(string="Já utilizada", help="Indica que a visita foi realizada.", required=True, default=False)
-	finalizado = fields.Boolean(string="Encerrada", help="Indica que a visita está finalizada.", required=True, default=False)
-	ultimo_uso = fields.Datetime(string="Última utilização", readonly=True)
+	finalizado = fields.Boolean(string="Encerrada", help="Indica que a visita está finalizada.", required=True, default=False)	

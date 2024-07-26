@@ -317,9 +317,15 @@ class HttpPublicoController(http.Controller):
 			for contrato in user.contrato_ids:
 				portas = env['bthinker.porta'].sudo().search([('contrato_id', '=', contrato.id), ('usuario_ids', 'in', user.id)])
 				contratos.append({'nome':contrato.partner_id.name, 'portas' : portas})
+			
 			values = {
 				'user': user,
-				'contratos': contratos
+				'contratos': contratos,
+				'periodos' : {
+					'30' : 'Últimos 30 dias',
+					'60' : 'Últimos 60 dias',
+					'90' : 'Últimos 90 dias'
+				}
 			}
 
 			_logger.info("Values: %s" % values)
@@ -612,8 +618,20 @@ class HttpPublicoController(http.Controller):
 
 			if len(data["door"].strip()) <= 0:
 				return {'errno': 1, 'message': 'Porta não pode ser vazio.'}
-										
+			
+			if 'method' not in data:
+				return {'errno': 1, 'message': 'Método de abertura não informado.'}
 
+			if len(data["method"].strip()) <= 0:
+				return {'errno': 1, 'message': 'Método de abertur não pode ser vazio.'}
+			
+			model = env['bthinker.registro_acesso']
+			options = dict(model._fields['metodo'].selection)
+			if not data["method"] in options:
+				return {'errno': 1, 'message': 'Método de abertura desconhecido: %s' % data['method']}
+
+
+			# Processamento
 			porta = env['bthinker.porta'].sudo().search([('guid', '=', data['door'])])
 			if not porta:
 				return {'errno': '1', 'message': "Porta não identificada no sistema."}
@@ -639,7 +657,6 @@ class HttpPublicoController(http.Controller):
 				if chave.visita_id.usuario_id:
 					usuario = chave.visita_id.usuario_id
 				
-
 				if chave.visita_id.finalizado:
 					return {'errno': '1', 'message': "Visita já finalizada"}
 				
@@ -674,21 +691,33 @@ class HttpPublicoController(http.Controller):
 				chave.visita_id.write({'executado':True, 'finalizado': chave.visita_id.usa_uma_vez})
 				
 			
-			#if chave.usuario_id:
-				# grava acesso
+			# Atualiza data de ultima utilização da chave
+			chave.sudo().write({'ultimo_uso' : datetime.datetime.now() })
 
+			# Aciona a porta
 			payload = {
 				'door': porta.guid
 			}				
-			data = self.call_door_server(contrato.host_servidor_porta,'openDoor', payload)
-			_logger.info("ESP DATA: %s" % data)
+			result = self.call_door_server(contrato.host_servidor_porta,'openDoor', payload)
+			_logger.info("ESP DATA: %s" % result)
 
-			if data['errno'] != "0":
-				return {'errno': data['errno'], 'message': data['message']}
-			
-			# Atualiza data de ultima utilização da chave
-			chave.sudo().write({'ultimo_uso' : datetime.datetime.now() })
-			return {'errno': '0', 'message': "Acesso liberado."}
+			# grava o acesso
+			nome_pessoa = usuario.nome
+			tipo = 'user'
+			if chave.visita_id:
+				nome_pessoa = '%s (VISITANTE)' % chave.visita_id.nome_visitante
+				tipo = 'visitor'
+
+			env["bthinker.registro_acesso"].sudo().create({
+				'nome_pessoa': nome_pessoa,
+				'usuario_id': usuario.id,
+				'porta_id': porta.id,
+				'tipo': tipo,
+				'metodo': data['method'],
+				'resultado': 'sucesso' if result['errno'] == 0 else 'falha'
+			})
+
+			return {'errno': result['errno'], 'message': result['message']}	
 
 		except Exception as ex:
 			return {'errno': 1, 'message': ex}	

@@ -11,6 +11,10 @@ input{
     font-size: 1.5rem !important;
 }
 
+select{
+    font-size: 1.5rem !important;
+}
+
 label{
     font-size: 1.5rem !important;
 }
