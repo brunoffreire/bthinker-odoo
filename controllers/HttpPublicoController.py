@@ -5,6 +5,7 @@ from asyncio.log import logger
 from collections import OrderedDict
 from operator import itemgetter
 
+from odoo.addons.bthinker_qrdoor.util.ModelUtils import ModelUtils
 from odoo.addons.bthinker_qrdoor.util.StringUtils import StringUtils
 from odoo import http, _
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError, MissingError
@@ -709,6 +710,7 @@ class HttpPublicoController(http.Controller):
 				tipo = 'visitor'
 
 			env["bthinker.registro_acesso"].sudo().create({
+				'contrato_id': porta.contrato_id.id,
 				'nome_pessoa': nome_pessoa,
 				'usuario_id': usuario.id,
 				'porta_id': porta.id,
@@ -722,6 +724,62 @@ class HttpPublicoController(http.Controller):
 		except Exception as ex:
 			return {'errno': 1, 'message': ex}	
 	
+
+
+	def search_report_records(self, env, data):
+		
+		_logger.info("search_report_records: %s" % data)
+		try:
+			
+			# Validando campos obrigatórios
+			if 'contrato_relatorio' not in data:
+				return {'errno': 1, 'message': 'Contato não informado.'}
+			
+			if 'periodo_relatorio' not in data:
+				return {'errno': 1, 'message': 'Período não informado.'}
+			
+			if 'page' not in data:
+				return {'errno': 1, 'message': 'Página não informada.'}
+						
+
+			now = datetime.datetime.now()
+			date_limit = now - datetime.timedelta(days=int(data['periodo_relatorio']))
+			filter = [
+				('contrato_id', '=', int(data['contrato_relatorio'])),
+				('create_date', '>=', date_limit)				
+			]
+
+			# se informou nome, adiciona condição no filtro
+			if 'nome_relatorio' in data:
+				if len(data["nome_relatorio"].strip()) > 0:
+					filter.append(('nome_pessoa', 'like', data['nome_pessoa'].strip()))
+			
+
+			offset = int(data['page']) * 25
+			limit = 25
+			
+			_logger.info("offset %d, limit %d" % (offset, limit))
+
+
+			records = env["bthinker.registro_acesso"].sudo().search(filter, order='create_date DESC', offset=offset, limit=limit)
+			data = []
+			for rec in records:
+				date = rec.create_date - datetime.timedelta(hours=3)
+				fdate = date.strftime('%d/%m/%Y')
+				ftime = date.strftime('%H:%M:%S')
+				data.append({
+					'nome': rec.nome_pessoa,
+					'porta': rec.porta_id.nome,
+					'tipo': ModelUtils.get_selection_label(rec, 'tipo', rec.tipo),
+					'metodo': ModelUtils.get_selection_label(rec, 'metodo', rec.metodo),
+					'resultado': ModelUtils.get_selection_label(rec, 'resultado', rec.resultado),
+					'data': fdate,
+					'hora': ftime
+				})
+			return {'errno': 0, 'data': data, 'count':len(data)}
+		except Exception as ex:
+			return {'errno': 1, 'message': ex}	
+		
 
 
 	def call_door_server(self, server_host, endpoint, payload):

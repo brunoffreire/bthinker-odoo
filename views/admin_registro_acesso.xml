@@ -16,12 +16,13 @@
       <field name="model">bthinker.registro_acesso</field>
       <field name="arch" type="xml">
         <tree>
+          <field name="contrato_id"/>
           <field name="nome_pessoa"/>
           <field name="usuario_id"/>
           <field name="porta_id"/>
           <field name="tipo"/>
           <field name="metodo"/>
-          <field name="resultado"/>
+          <field name="resultado"/>          
           <field name="create_date"/>
         </tree>
       </field>
@@ -36,7 +37,7 @@
             <group col="2">
               <group>
                 <separator string="Dados do Acesso"/>
-
+                <field name="contrato_id"/>
                 <field name="nome_pessoa"/>
                 <field name="usuario_id"/>
                 <field name="porta_id"/>

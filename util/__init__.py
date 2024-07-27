@@ -2,6 +2,7 @@
 from . import cnpj
 from . import cpf
 from . import viacep
+from . import ModelUtils
 from . import StringUtils
 from . import qrcode
 from . import email

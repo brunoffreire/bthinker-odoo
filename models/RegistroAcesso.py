@@ -15,6 +15,7 @@ class chave(models.Model):
 
 	# Nome do usuário ou do visitante
 	nome_pessoa = fields.Char(string="Nome da Pessoa", required=True, readonly=True)		
+	contrato_id = fields.Many2one("bthinker.contrato", string="Contrato", ondelete="set null", readonly=True)
 	usuario_id = fields.Many2one("bthinker.usuario", string="Usuário", ondelete="set null", readonly=True)
 	porta_id = fields.Many2one("bthinker.porta", string="Porta", ondelete="set null", readonly=True)		
 	tipo = fields.Selection([

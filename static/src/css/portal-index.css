@@ -60,7 +60,7 @@ a.selected{
     height: 100%;
     width: 250px; /* Definimos uma largura fixa */
     position: fixed;
-    z-index: 1;
+    z-index: 5;
     top: 0;
     left: -250px; /* Posicionamos fora da tela inicialmente */
     background-color: #33C3F0;
@@ -108,4 +108,38 @@ a.selected{
     text-align: right;
     border-bottom: #dedede 1px solid;
     padding-bottom: 10px;
+}
+
+#last-access-records{
+    height: 300px; 
+    overflow-y: scroll;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+}
+
+
+#last-access-records table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#last-access-records thead {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+#last-access-records th, #last-access-records td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#last-access-records th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+#page_4{
+    position: relative;
 }
