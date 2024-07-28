@@ -752,7 +752,7 @@ class HttpPublicoController(http.Controller):
 			# se informou nome, adiciona condição no filtro
 			if 'nome_relatorio' in data:
 				if len(data["nome_relatorio"].strip()) > 0:
-					filter.append(('nome_pessoa', 'like', data['nome_pessoa'].strip()))
+					filter.append(('nome_pessoa', 'ilike', data['nome_relatorio'].strip()))
 			
 
 			offset = int(data['page']) * 25
