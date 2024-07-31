@@ -3,9 +3,9 @@
 	<template id="portal_login" name="Login">
 		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="timestamp" t-value="int(time.time())"/>
-			<t t-set="portal_head">				
-				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-login.js?key={}'.format(timestamp)"/>				
-				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-login.css?key={}'.format(timestamp)" rel="stylesheet"/>				
+			<t t-set="portal_head">
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-login.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-login.css?key={}'.format(timestamp)" rel="stylesheet"/>
 			</t>
 			<t t-set="body_class" t-value="'bg-white-200'"/>
 			<t t-set="portal_body">
@@ -16,9 +16,11 @@
 							<div class="twelve columns">
 								<label for="username">Nome de Usuário</label>
 								<input class="twelve columns" type="text" id="username" placeholder="username" required="1"/>
-
 								<label for="senha">Senha</label>
-								<input class="twelve columns" type="password" id="senha" required="1"/>
+								<div class="row input-container">
+									<input class="twelve columns" type="password" id="senha" required="1"/>
+									<i class="fas fa-eye toggle-password" for="senha"></i>
+								</div>
 							</div>
 						</div>
 						<div id="row_checkbox" class="row">

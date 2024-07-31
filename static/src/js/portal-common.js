@@ -48,3 +48,15 @@ function callServer(endpoint, params, callback, ctx = null) {
 		}
 	});
 }
+
+$(document).ready(function() {	
+	$('.toggle-password').on('click', function() {				
+		const inputId = $(this).attr('for');
+		const passwordField = $('#' + inputId);
+		const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+		passwordField.attr('type', type);
+
+		// Alterna o ícone
+		$(this).toggleClass('fa-eye fa-eye-slash');
+	});
+});

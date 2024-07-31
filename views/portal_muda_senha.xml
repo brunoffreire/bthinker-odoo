@@ -20,10 +20,16 @@
 							<div id="row_fields" class="row">
 								<div class="twelve columns">
 									<label for="senha">Senha</label>
-									<input class="twelve columns" type="password" id="senha" required="1"/>
+									<div class="row input-container">
+										<input class="twelve columns" type="password" id="senha" required="1"/>
+										<i class="fas fa-eye toggle-password" for="senha"></i>
+									</div>
 
 									<label for="confirma_senha">Confirmação de Senha</label>
-									<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
+									<div class="row input-container">
+										<input class="twelve columns" type="password" id="confirma_senha" required="1"/>
+										<i class="fas fa-eye toggle-password" for="confirma_senha"></i>
+									</div>
 								</div>
 							</div>
 							<div id="row_save_button" class="twelve columns centered">
