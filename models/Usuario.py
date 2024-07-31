@@ -56,6 +56,15 @@ class usuario(models.Model):
 	
 
 	@api.model
+	def default_get(self, fields_list):
+		uuid1 = uuid.uuid1().hex.upper()
+		uuid4 = uuid.uuid4().hex.upper()
+		res = super(usuario, self).default_get(fields_list)		
+		res.update({'auto_login_hash': uuid1+uuid4})
+		return res
+	
+
+	@api.model
 	def create(self, vals):
 		if 'username' in vals:
 			vals['username'] = vals['username'].lower()

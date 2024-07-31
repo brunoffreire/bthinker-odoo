@@ -264,7 +264,7 @@ function searchReport_callback(data, report_page) {
   var tbody = table.find("tbody");
   if (report_page === 0) {
     tbody.empty();
-  }
+  }  
 
   data.result.data.forEach(function (item) {
     var row = $("<tr>");

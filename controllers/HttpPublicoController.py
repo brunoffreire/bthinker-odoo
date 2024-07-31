@@ -217,8 +217,8 @@ class HttpPublicoController(http.Controller):
 				return erro
 					
 			
-			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao, 'key': user.chave_id.guid}
-			return {'errno': 0, 'user': user.username, 'hash': user.hash_validacao, 'key': user.chave_id.guid}
+			http.request.session['user'] = {'user': user.username, 'hash': user.auto_login_hash, 'key': user.chave_id.guid}
+			return {'errno': 0, 'user': user.username, 'hash': user.auto_login_hash, 'key': user.chave_id.guid}
 		
 		except AccessDenied:
 			return {'errno': 1, 'message': 'Acesso negado.'}
@@ -252,7 +252,7 @@ class HttpPublicoController(http.Controller):
 						erro =  {'errno': 1, 'message': '%s não pode ser vazio.' % value}
 						break
 				
-				user = env['bthinker.usuario'].sudo().search([('username', '=', data['user'].lower()), ('hash_validacao', '=', data['hash'])])
+				user = env['bthinker.usuario'].sudo().search([('username', '=', data['user'].lower()), ('auto_login_hash', '=', data['hash'])])
 				if not user:
 					erro =  {'errno': 1, 'message': 'Usuário não encontrado ou hash incorreta.'}
 					break
@@ -330,7 +330,7 @@ class HttpPublicoController(http.Controller):
 			}
 
 			_logger.info("Values: %s" % values)
-			http.request.session['user'] = {'user': user.username, 'hash': user.hash_validacao}		
+			http.request.session['user'] = {'user': user.username, 'hash': user.auto_login_hash}		
 			html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_authorized", values)											
 			return {'errno': 0, 'message' : 'Login por hash bem sucedido.', 'html': html}
 		
