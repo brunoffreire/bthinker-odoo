@@ -36,6 +36,12 @@
                 <field name="email"/>
                 <field name="celular"/>
                 <field name="senha"/>
+              </group>
+              <group>            
+                <separator string="Dados Gerais"/>
+                <field name="flag_criar_visita"/>
+                <field name="flag_abertura_remota"/>
+                <field name="flag_ver_cameras"/>
                 <field name="chave_id"/>
                 <field name="status_ultimo_login"/>
               </group>

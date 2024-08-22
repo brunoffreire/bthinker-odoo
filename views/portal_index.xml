@@ -4,14 +4,285 @@
 		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="timestamp" t-value="int(time.time())"/>
 			<t t-set="portal_head">
-				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-index.css?key={}'.format(timestamp)" rel="stylesheet"/>							
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-index.css?key={}'.format(timestamp)" rel="stylesheet"/>
 				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-QRReader.js?key={}'.format(timestamp)"/>
-				
-				<script src="/bthinker_qrdoor/static/src/js/jsQR.min.1.js"/>				
+
+				<script src="/bthinker_qrdoor/static/src/js/jsQR.min.1.js"/>
 				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index.js?key={}'.format(timestamp)"/>
+
+				<t t-if="user.flag_abertura_remota">
+					<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index-remote-open.js?key={}'.format(timestamp)"/>
+				</t>
+
+				<t t-if="user.flag_ver_cameras">
+					<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-index-camera.css?key={}'.format(timestamp)" rel="stylesheet"/>
+					<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index-camera.js?key={}'.format(timestamp)"/>
+				</t>
+
+				<t t-if="user.flag_criar_visita">
+					<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index-visit.js?key={}'.format(timestamp)"/>
+				</t>
+
+				<t t-if="user.tipo == 'admin'">
+					<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index-invite-user.js?key={}'.format(timestamp)"/>
+					<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-index-report.js?key={}'.format(timestamp)"/>
+				</t>
 			</t>
+
 			<t t-set="portal_body">
-				
+				<div id="sideMenu" class="side-menu">
+					<a href="javascript:void(0)" class="close-btn" onclick="closeMenu()">
+						<i class="menu-icon fas fa-xmark"></i>
+					</a>
+					<a class="menu-item" page-index="0">
+						<i class="menu-icon fas fa-qrcode"></i>QRCode</a>
+
+					<t t-if="user.flag_abertura_remota">
+						<a class="menu-item" page-index="1">
+							<i class="menu-icon fas fa-lock-open"></i>Portas</a>
+					</t>
+
+					<t t-if="user.flag_ver_cameras">
+						<a class="menu-item" page-index="2">
+							<i class="menu-icon fas fa-video"></i>Câmeras</a>
+					</t>
+
+					<t t-if="user.flag_criar_visita">
+						<a class="menu-item" page-index="3">
+							<i class="menu-icon fas fa-user-clock"></i>Visita</a>
+					</t>
+
+					<t t-if="user.tipo == 'admin'">
+						<a class="menu-item" page-index="4">
+							<i class="menu-icon fas fa-user-tie"></i>Administração</a>
+
+						<a class="menu-item" page-index="5">
+							<i class="menu-icon fas fa-magnifying-glass"></i>Últimos Acessos</a>
+					</t>
+
+					<a href="/virtualkey/logout">
+						<i class="menu-icon fas fa-power-off"></i>Sair</a>
+				</div>
+				<div class="row top-bar">
+					<span class="open-btn" onclick="openMenu()">
+						<i class="menu-icon fas fa-bars"></i>
+					</span>
+					<img class="image-logo" src="/bthinker_qrdoor/static/src/img/logo-bthinker.jpg"/>
+				</div>
+
+				<div t-attf-class="index-page #{'selected' if not user.flag_abertura_remota else ''}" class="index-page" page-index="0">
+					<div class="container">
+						<div class="row centered">
+							<div class="twelve columns">
+								<p class="centered">Utilize a câmera do seu dispositivo para ler o QRCode da porta.</p>
+							</div>
+
+							<div id="canvas-container">
+								<canvas id="canvas"></canvas>
+							</div>
+							<div id="mensagem">
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<t t-if="user.flag_abertura_remota">
+					<div t-attf-class="index-page selected" class="index-page" page-index="1">
+						<div class="container">
+							<div class="row centered">
+								<button type="button" class="button-primary button-qrcode" onclick="showPage(0)">
+							Utilizar QRCode<i class="door-button-icon fas fa-qrcode"></i>
+								</button>
+							</div>
+							<h3 class="centered">Abertura Remota</h3>
+							<t t-foreach="contratos" t-as="contrato">
+								<div class="centered">
+									<h4>
+										<t t-esc="contrato['nome']"/>
+									</h4>
+									<t t-foreach="contrato['portas']" t-as="porta">
+										<div class="row">
+											<t t-if="porta.state == 'online'">
+												<button type="button" class="button-primary button-door-online" t-att-data-value="porta.guid">
+													<t t-esc="porta.nome"/>
+													<i class="door-button-icon fas fa-lock-open"></i>
+												</button>
+											</t>
+											<t t-else="">
+												<button type="button" class="button button-door-offline" t-att-data-value="porta.guid">
+													<t t-esc="porta.nome"/>
+													<i class="door-button-icon fas fa-ban"></i>
+												</button>
+											</t>
+										</div>
+									</t>
+								</div>
+							</t>
+						</div>
+					</div>
+				</t>
+
+				<t t-if="user.flag_ver_cameras">
+					<div class="index-page" page-index="2">
+						<div class="container">
+
+							<div class="row centered">
+								<h4>Câmeras</h4>
+							</div>
+
+							<div class="row">
+								<label for="camera_id">Câmera</label>
+								<select id="camera_id" class="twelve columns">
+									<t t-foreach="contratos" t-as="contrato">
+										<t t-foreach="contrato['cameras']" t-as="camera">
+											<option t-att-value="camera.guid">
+												<t t-if="len(contratos) == 1">
+													<t t-esc="camera.nome"/>
+												</t>
+												<t t-else="">
+													<t t-esc="'%s - %s' % (contrato['nome'], camera.nome)"/>
+												</t>
+											</option>
+										</t>
+									</t>
+								</select>
+							</div>
+						</div>
+
+
+						<div class="row">
+							<div id="camera_view">
+
+							</div>
+						</div>
+
+
+						<div class="container">
+							<div id="camera_buttons">
+
+							</div>
+						</div>
+
+					</div>
+				</t>
+
+				<t t-if="user.flag_criar_visita">
+					<div class="index-page" page-index="3">
+						<div class="container">
+							<h3 class="centered">Visita</h3>
+							<form id="form" method="post">
+								<div id="row_fields" class="row">
+									<div class="twelve columns">
+										<label for="visitante">Nome do Visitante</label>
+										<input class="twelve columns" type="text" id="nome_visitante" placeholder="João da Silva" required="1"/>
+
+										<label for="duracao">Duração</label>
+										<input type="number" id="duracao" required="1"/>
+										<span> horas (01 a 24)</span>
+									</div>
+								</div>
+								<div id="row_checkbox" class="row">
+									<div class="twelve columns">
+										<input type="checkbox" id="usa_uma_vez"/>
+										<span>Permitir apenas uma utilização</span>
+									</div>
+								</div>
+								<div id="row_help" class="row">
+									<div class="twelve columns">
+										<p>
+											<b>Duração:</b> O link da visita será válido pelo período de tempo informado, a contar do momento do seu cadastro.</p>
+										<p>
+											<b>Permitir apenas uma utilização:</b> O link da visita será invalidado assim que o visitante utilizá-lo.</p>
+									</div>
+								</div>
+								<div id="row_share" class="twelve columns centered">
+									<button type="button" class="button-primary" id="btn_new_visit">
+										<i class="button-icon fas fa-share-nodes"></i> Compartilhar
+									</button>
+								</div>
+							</form>
+
+						</div>
+					</div>
+				</t>
+
+				<t t-if="user.tipo == 'admin'">
+					<div class="index-page" page-index="4">
+						<div class="container">
+							<div class="centered">
+								<h4>Convidar Usuários</h4>
+								<div id="row_invite" class="twelve columns centered">
+									<t t-if="len(user.contrato_ids) == 1">
+										<input type="hidden" id="contrato_convite_id" t-att-value="user.contrato_ids[0].id"/>
+									</t>
+									<t t-else="">
+										<label for="contrato_convite_id">Contrato Associado</label>
+										<select id="contrato_convite_id">
+											<t t-foreach="user.contrato_ids" t-as="contrato">
+												<option t-att-value="contrato.id">
+													<t t-esc="contrato.nome"/>
+												</option>
+											</t>
+										</select>
+										<br/>
+										<br/>
+									</t>
+									<button type="button" class="button-primary" id="btn_invite_user">
+										<i class="button-icon fas fa-share-nodes"></i> Enviar link de convite
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</t>
+
+				<t t-if="user.tipo == 'admin'">
+					<div class="index-page" page-index="5">
+						<div class="container">
+							<div class="row centered">
+								<h4>Últimos Acessos</h4>
+							</div>
+
+							<t t-if="len(user.contrato_ids) == 1">
+								<input type="hidden" id="contrato_relatorio" t-att-value="user.contrato_ids[0].id"/>
+							</t>
+							<t t-else="">
+								<label for="contrato_relatorio">Contrato Associado</label>
+								<select id="contrato_relatorio">
+									<t t-foreach="user.contrato_ids" t-as="contrato">
+										<option t-att-value="contrato.id">
+											<t t-esc="contrato.nome"/>
+										</option>
+									</t>
+								</select>
+							</t>
+
+							<label for="periodo_relatorio">Período</label>
+							<select id="periodo_relatorio">
+								<t t-foreach="periodos.items()" t-as="periodo">
+									<option t-att-value="periodo[0]">
+										<t t-esc="periodo[1]"/>
+									</option>
+								</t>
+							</select>
+
+							<label for="nome_relatorio">Nome</label>
+							<div class="row">
+								<input type="text" id="nome_relatorio" placeholder="João da Silva"/>
+								<button class="button-primary" id="busca_relatorio">
+									<i class=" fas fa-magnifying-glass"></i>
+								</button>
+
+							</div>
+
+							<div id="last-access-records">
+
+							</div>
+						</div>
+
+					</div>
+				</t>
 			</t>
 		</t>
 	</template>

@@ -28,23 +28,138 @@ _logger = logging.getLogger(__name__)
 
 class HttpPublicoController(http.Controller):
 		
+	# Pagina principal
 	@http.route(['/virtualkey', '/virtualkey/index'], type='http', auth="public", website=True)
 	def portal_index(self, token=None, **kw):
-		values = {}
+		
+		_logger.info("index page")
+
+		# Se não houver uma sessão com o navegador, direciona para tentativa de login
+		# automático, com dados armazenados no localStorage do cliente
+		if not 'user' in request.session:
+			return request.redirect("/virtualkey/autologin")
+		
+		if not request.session['user']:
+			return request.redirect("/virtualkey/autologin")
+		
+		_logger.info("SESSION DATA: %s" % request.session['user'])
+
+		# Há uma sessão válida com o navegador do cliente.
+		# Queremos validar que o hash de auto login do usuário ainda é o mesmo.
+		# Isso permite que o gerende do sistema possa invalidar sessões alterando o
+		# hash de auto login do cliente.
+		user = request.env['bthinker.usuario'].sudo().search([
+			('username', '=', request.session['user']['username']),
+			('auto_login_hash', '=', request.session['user']['auto_login_hash']),
+			])
+		
+		# Os dados da sessão não são mais iguais aos dados do usuario
+		# Redireciona para tentativa de auto login
+		if not user:
+			return request.redirect("/virtualkey/autologin")
+
+		# Os dados da sessão do usuário ainda são válidos. Prossegue.
+		# Para cada contrato que o usuário tem acesso:
+		# Atualiza o status das porta que o usuário vai ver em sua lista
+		# para saber se estão online
+		try:
+			
+			payload = []
+			for contrato in user.contrato_ids:
+
+				for porta in contrato.porta_ids:
+					payload.append(porta.guid)
+									
+				try:
+					# tenta falar com o servidor de portas
+					result = self.call_door_server(contrato.host_servidor_porta, 'getDoorStatus', payload)
+					_logger.info("DOOR STATUS RESULT: %s" % result)
+				except Exception as ex:
+					# falhou na comunicação. Seta portas para off
+					contrato.porta_ids.sudo().write({'state' : 'offline'})
+					continue
+
+				# Comunicou sem erro. Processa resposta
+				if result['errno'] == 0:
+					for guid, status in result['data'].items():
+						porta = request.env['bthinker.porta'].sudo().search([('guid', '=', guid)])
+						porta.sudo().write({'state' : 'online' if status == 1 else 'offline'})
+				
+				# Comunicou, mas houve erro. Seta pra offline
+				else:						
+					contrato.porta_ids.sudo().write({'state' : 'offline'})
+					_logger.info("Erro 1: %s" % result['message'])
+			
+			request.env.cr.commit()
+		except Exception as ex:
+			request.env.cr.rollback()
+			_logger.info("Erro2: %s" % ex)
+
+		# Usuário está logado. Obtem as portas e cameras que o usuário tem acesso
+		contratos = []
+		cameras = []
+		for contrato in user.contrato_ids:
+			portas = request.env['bthinker.porta'].sudo().search([('contrato_id', '=', contrato.id), ('usuario_ids', 'in', user.id)])
+			cameras = request.env['bthinker.camera'].sudo().search([('contrato_id', '=', contrato.id), ('usuario_ids', 'in', user.id)])
+			contratos.append({'nome':contrato.partner_id.name, 'portas' : portas, 'cameras': cameras})
+		
+		values = {
+			'user': user,
+			'contratos': contratos,
+			'cameras': cameras,
+			'periodos' : {
+				'30' : 'Últimos 30 dias',
+				'60' : 'Últimos 60 dias',
+				'90' : 'Últimos 90 dias'
+			}
+		}
+
+		_logger.info("Values: %s" % values)
 		return request.render("bthinker_qrdoor.portal_index", values)						
 
 
+	# Página de login automático. 
+	# Usada para tentar fazer o login do usuário com os dados armazenados
+	# no localStrage do navegador cliente, para implementação da função
+	# "Mantenha-me Conectado"
+	@http.route('/virtualkey/autologin', type='http', auth="public", website=True)
+	def portal_autologin(self, token=None, **kw):
+		
+		_logger.info("autologin page")
+
+		# Força a invalidação da sessão atual, caso exista, para novo
+		# processo de login
+		request.session['user'] = None
+
+		# Redereriza a página. JS vai tentar fazer o login via AJAX.
+		values = {}
+		return request.render("bthinker_qrdoor.portal_autologin", values)	
+	
+
+	# Página de login do usuário. Processo padrão de login
 	@http.route('/virtualkey/login', type='http', auth="public", website=True)
 	def portal_login(self, token=None, **kw):
+		
+		_logger.info("login page")
+
+		# Força a invalidação da sessão atual, caso exista, para novo
+		# processo de login
 		request.session['user'] = None
+		
 		values = {}
-		return request.render("bthinker_qrdoor.portal_login", values)	
+		return request.render("bthinker_qrdoor.portal_login", values)
+	
 
-
+	# Página de logout. Força encerramento de sessão e 
+	# Remoção dos dados de login no localStorage do cliente
 	@http.route('/virtualkey/logout', type='http', auth="public", website=True)
 	def portal_logout(self, token=None, **kw):
+		
+		_logger.info("logout page")
+
 		request.session['user'] = None
-		return request.redirect("/virtualkey/login")
+		values = {}
+		return request.render("bthinker_qrdoor.portal_logout", values)
 	
 
 	@http.route('/virtualkey/visita', type='http', auth="public", website=True)
@@ -215,10 +330,9 @@ class HttpPublicoController(http.Controller):
 					user.sudo().write({"status_ultimo_login": erro['message']})
 				
 				return erro
-					
-			
-			http.request.session['user'] = {'user': user.username, 'hash': user.auto_login_hash, 'key': user.chave_id.guid}
-			return {'errno': 0, 'user': user.username, 'hash': user.auto_login_hash, 'key': user.chave_id.guid}
+								
+			http.request.session['user'] = {'username': user.username, 'auto_login_hash': user.auto_login_hash}
+			return {'errno': 0, 'user': user.username, 'hash': user.auto_login_hash}
 		
 		except AccessDenied:
 			return {'errno': 1, 'message': 'Acesso negado.'}
@@ -276,63 +390,9 @@ class HttpPublicoController(http.Controller):
 					
 				return erro
 			
-
-			# Para cada contrato que o usuário tem acesso:
-			# Atualiza o status das porta que o usuário vai ver em sua lista
-			# para saber se estão online
-			try:
-				
-				payload = []
-				for contrato in user.contrato_ids:
-
-					for porta in contrato.porta_ids:
-						payload.append(porta.guid)
-										
-					try:
-						# tenta falar com o servidor de portas
-						result = self.call_door_server(contrato.host_servidor_porta, 'getDoorStatus', payload)
-						_logger.info("RESULT: %s" % result)
-					except Exception as ex:
-						# falhou na comunicação. Seta portas para off
-						contrato.porta_ids.sudo().write({'state' : 'offline'})
-						continue
-
-					# Comunicou sem erro. Processa resposta
-					if result['errno'] == 0:
-						for guid, status in result['data'].items():
-							porta = env['bthinker.porta'].sudo().search([('guid', '=', guid)])
-							porta.sudo().write({'state' : 'online' if status == 1 else 'offline'})
-					
-					# Comunicou, mas houve erro. Seta pra offline
-					else:						
-						contrato.porta_ids.sudo().write({'state' : 'offline'})
-						_logger.info("Erro 1: %s" % result['message'])
-				
-				env.cr.commit()
-			except Exception as ex:
-				env.cr.rollback()
-				_logger.info("Erro2: %s" % ex)
-
-			# Usuário está logado. Obtem as portas que o usuário tem acesso
-			contratos = []
-			for contrato in user.contrato_ids:
-				portas = env['bthinker.porta'].sudo().search([('contrato_id', '=', contrato.id), ('usuario_ids', 'in', user.id)])
-				contratos.append({'nome':contrato.partner_id.name, 'portas' : portas})
 			
-			values = {
-				'user': user,
-				'contratos': contratos,
-				'periodos' : {
-					'30' : 'Últimos 30 dias',
-					'60' : 'Últimos 60 dias',
-					'90' : 'Últimos 90 dias'
-				}
-			}
-
-			_logger.info("Values: %s" % values)
-			http.request.session['user'] = {'user': user.username, 'hash': user.auto_login_hash}		
-			html = request.env['ir.ui.view']._render_template("bthinker_qrdoor.portal_index_authorized", values)											
-			return {'errno': 0, 'message' : 'Login por hash bem sucedido.', 'html': html}
+			http.request.session['user'] = {'username': user.username, 'auto_login_hash': user.auto_login_hash}		
+			return {'errno': 0, 'message' : 'Login por hash bem sucedido.'}
 		
 		except Exception as ex:
 			return {'errno': 1, 'message': ex}
@@ -376,7 +436,7 @@ class HttpPublicoController(http.Controller):
 		
 		user.send_password_change_email()
 	
-		return {'errno': '0', 'message': "Em e-mail foi enviado para %s." % StringUtils.maskEmail(user.email)}
+		return {'errno': '0', 'message': "Um e-mail foi enviado para %s." % StringUtils.maskEmail(user.email)}
 
 
 	# Salvar cadastro de novo usuário
@@ -492,15 +552,14 @@ class HttpPublicoController(http.Controller):
 			return {'errno': 500, 'message': err}
 	
 
-	# Cria uma nova visita
-	
+	# Cria uma nova visita	
 	def save_new_visit(self, env, data):
 		try:
 			user_data = http.request.session['user']
 			
 			user = env['bthinker.usuario'].sudo().search([
-				('username', '=', user_data['user']), 
-				('hash_validacao', '=', user_data['hash'])
+				('username', '=', user_data['username']), 
+				('hash_validacao', '=', user_data['auto_login_hash'])
 			])
 
 			if not user:
@@ -566,8 +625,8 @@ class HttpPublicoController(http.Controller):
 			user_data = http.request.session['user']
 			
 			user = env['bthinker.usuario'].sudo().search([
-				('username', '=', user_data['user']), 
-				('hash_validacao', '=', user_data['hash'])
+				('username', '=', user_data['username']), 
+				('hash_validacao', '=', user_data['auto_login_hash'])
 			])
 
 			if not user:
@@ -603,6 +662,53 @@ class HttpPublicoController(http.Controller):
 			_logger.info(ex)
 			return {'errno': 1, 'message': 'Acesso negado.'}
 
+
+
+	def auth_user_door(self, env, data):
+		_logger.info("auth_user_door: %s" % data)
+		
+		try:			
+			if 'door' not in data:
+				return {'errno': 1, 'message': 'Porta não informada.'}
+
+			if len(data["door"].strip()) <= 0:
+				return {'errno': 1, 'message': 'Porta não pode ser vazio.'}
+			
+			if 'method' not in data:
+				return {'errno': 1, 'message': 'Método de abertura não informado.'}
+
+			if len(data["method"].strip()) <= 0:
+				return {'errno': 1, 'message': 'Método de abertur não pode ser vazio.'}
+			
+			# Se não houver uma sessão com o navegador, direciona para tentativa de login
+			# automático, com dados armazenados no localStorage do cliente
+			if not 'user' in request.session:
+				return {'errno': 1, 'message': 'Sessão de usuário inválida.'}
+			
+			if not request.session['user']:
+				return {'errno': 1, 'message': 'Sessão de usuário inválida.'}
+			
+			user_data = http.request.session['user']
+			user = env['bthinker.usuario'].sudo().search([
+				('username', '=', user_data['username']), 
+				('hash_validacao', '=', user_data['auto_login_hash'])
+			])	
+			
+			if not user:
+				return {'errno': 1, 'message': 'Usuário não encontrado.'}
+			
+			if not user.chave_id:
+				return {'errno': 1, 'message': 'Usuário não possui chave.'}
+			
+			data = {
+				'key' : user.chave_id.guid,
+				'door': data['door'],
+				'method':data['method']
+			}
+			return self.auth_key_door(env, data)
+			
+		except Exception as ex:
+			return {'errno': 1, 'message': ex}	
 
 	
 	def auth_key_door(self, env, data):
@@ -784,7 +890,9 @@ class HttpPublicoController(http.Controller):
 
 	def call_door_server(self, server_host, endpoint, payload):
 		
-		url = 'http://%s:8200/qrdoor/%s' % (server_host, endpoint)
+		url = 'http://%s:8200/qrdoor/%s' % (server_host, endpoint)		
+		_logger.info("CALL DOOR SERVER: %s" % url)
+
 		headers = {
 			'Content-Type': 'application/json',
 		}		
@@ -793,4 +901,48 @@ class HttpPublicoController(http.Controller):
 		response.raise_for_status()  # Verifica se a requisição foi bem-sucedida
 		response_data = response.json()  # Processa a resposta JSON
 		return response_data
+	
+
+	# Obtem as cameras vinculadas a uma porta
+	def get_camera_doors(self, env, data):		
+		
+		if 'guid' not in data:
+			return {'errno': '1', 'message': "GUID da câmera não informado."}
+		
+		if len(data['guid'].strip()) <= 0:
+			return {'errno': '1', 'message': "GUID da câmera não pode ser vazio."}					
+
+		user_data = http.request.session['user']			
+		user = env['bthinker.usuario'].sudo().search([
+			('username', '=', user_data['username']), 
+			('hash_validacao', '=', user_data['auto_login_hash'])
+		])
+			
+		camera = env['bthinker.camera'].sudo().search([('guid', '=', data['guid'])])		
+		if not camera:
+			return {'errno': '1', 'message': "Câmera não encontrada."}
+		
+		portas = []
+		# para cada porta associada a esta camera
+		for porta in camera.porta_ids:
+			if user.id in porta.usuario_ids.ids:
+				portas.append({
+					'nome' : porta.nome,
+					'guid' : porta.guid,
+					'state' : 1 if porta.state == 'online' else 0
+				})
+					
+		return {'errno': '0', 'portas': portas}
+	
+	
+	# Solicita obtenção das imagens da camera
+	def get_camera_feed(self, env, data):
+		
+		camera = env['bthinker.camera'].sudo().search([('guid', '=', data['guid'])])
+		if not camera:
+			return {'errno': 1, 'message': 'Câmera não encontrada'}		
+
+		url = 'http://%s:8300/camera?cam=%s' % (camera.contrato_id.host_servidor_porta, camera.guid)
+		_logger.info("CAMERA SERVER URL: %s" % url)
+		return {'errno': 0, 'url': url}
 			

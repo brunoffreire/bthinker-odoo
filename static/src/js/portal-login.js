@@ -26,11 +26,9 @@ function login_callback(data) {
   if (remember_me) {
     localStorage.setItem("user", data.result.user);
     localStorage.setItem("hash", data.result.hash);
-    localStorage.setItem("key", data.result.key);
     localStorage.setItem("auto_login", remember_me);
   }
-
-  redirect("/virtualkey");
+  redirect("/virtualkey/index");
 }
 
 function change_password() {
@@ -64,7 +62,7 @@ function change_password_callback(data) {
 $(document).ready(function () {
 
   localStorage.clear();
-  
+
   $("#btn_login").click(function () {
     login();
   });
@@ -80,8 +78,7 @@ $(document).ready(function () {
     if (!ok) {
       return;
     }
-
     change_password();
   });
-
+  
 });

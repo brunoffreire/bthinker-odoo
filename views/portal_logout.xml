@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_logout" name="Logout">
+		<t t-call="bthinker_qrdoor.portal_layout_empty">
+			<t t-set="portal_head">
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-logout.js?key={}'.format(timestamp)"/>
+			</t>
+			<t t-set="portal_body">
+			</t>
+		</t>
+	</template>
+</odoo>

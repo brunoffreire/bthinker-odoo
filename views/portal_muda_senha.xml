@@ -4,8 +4,8 @@
 		<t t-call="bthinker_qrdoor.portal_layout">
 			<t t-set="timestamp" t-value="int(time.time())"/>
 			<t t-set="portal_head">
-				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-muda_senha.js?key={}'.format(timestamp)"/>
-				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-muda_senha.css?key={}'.format(timestamp)" rel="stylesheet"/>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-muda-senha.js?key={}'.format(timestamp)"/>
+				<link t-att-href="'/bthinker_qrdoor/static/src/css/portal-muda-senha.css?key={}'.format(timestamp)" rel="stylesheet"/>
 			</t>
 			<t t-set="body_class" t-value="'bg-white-200'"/>
 			<t t-set="portal_body">

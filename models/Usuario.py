@@ -47,6 +47,11 @@ class usuario(models.Model):
 	status_ultimo_login = fields.Char(string="Status do último Login", readonly=True)	
 	porta_ids = fields.Many2many("bthinker.porta", string="Portas do Usuário", domain="[('contrato_id', 'in', contrato_ids)]")
 
+	flag_criar_visita = fields.Boolean(string="Pode criar visitas", default=True)
+	flag_abertura_remota = fields.Boolean(string="Pode executar abertura remota", default=True)
+	flag_ver_cameras = fields.Boolean(string="Pode ver câmeras", default=True)
+	
+
 	def name_get(self):
 		result = []
 		for record in self:

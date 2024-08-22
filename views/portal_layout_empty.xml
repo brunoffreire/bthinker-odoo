@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="portal_layout_empty" name="Layout Vazio de Página do Portal de Acesso">
+		&lt;!DOCTYPE html&gt;
+		<html lang="en">
+			<head>
+				<title>B-Thinker - Chave Virtual</title>
+				<t t-set="timestamp" t-value="int(time.time())"/>
+				<meta charset="utf-8" />
+				<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+				<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+				<script t-att-src="'/bthinker_qrdoor/static/src/js/portal-common.js?key={}'.format(timestamp)"/>
+				<t t-raw="portal_head"/>				
+			</head>
+			<body t-attf-class="#{body_class if body_class else ''}">
+				<t t-raw="portal_body"/>
+				
+			</body>
+		</html>
+	</template>
+</odoo>

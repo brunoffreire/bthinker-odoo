@@ -1,0 +1,64 @@
+<odoo>
+  <data>
+    <record model="ir.actions.act_window" id="bthinker_qrdoor.camera_action_window">
+      <field name="name">Cadastro de Câmera</field>
+      <field name="res_model">bthinker.camera</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_smiling_face">
+Cadastre a primeira Câmera!
+        </p>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.camera_list">
+      <field name="name">bthinker.camera.list</field>
+      <field name="model">bthinker.camera</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="nome"/>
+          <field name="guid"/>
+          <field name="contrato_id"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="bthinker_qrdoor.camera_form">
+      <field name="name">bthinker.camera.form</field>
+      <field name="model">bthinker.camera</field>
+      <field name="arch" type="xml">
+        <form string="Cadastro de Câmera">
+          <sheet>
+            <group col="2">
+              <group>
+                <separator string="Dados Gerais"/>                
+                <field name="nome"/>
+                <field name="guid"/>
+                <field name="contrato_id"/>                
+              </group>
+            </group>
+            <notebook>
+              <page string="Portas">
+                <field name="porta_ids">
+                  <tree string="Portas da Câmera" delete="true" create="true" edit="true" editable="top" default_order="nome">                    
+                    <field name="nome"/>
+                  </tree>
+                </field>
+              </page>
+              <page string="Usuários">
+                <field name="usuario_ids">
+                  <tree string="Usuários do Contrato" delete="false" create="false" edit="false" editable="top">
+                    <field name="nome"/>
+                    <field name="username"/>
+                    <field name="email"/>
+                    <field name="celular"/>
+                  </tree>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+  </data>
+</odoo>

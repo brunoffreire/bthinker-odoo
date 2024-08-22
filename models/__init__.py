@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import Camera
 from . import Chave
 from . import Contrato
 from . import Porta
