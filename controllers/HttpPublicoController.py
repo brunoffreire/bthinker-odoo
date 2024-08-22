@@ -42,6 +42,12 @@ class HttpPublicoController(http.Controller):
 		if not request.session['user']:
 			return request.redirect("/virtualkey/autologin")
 		
+		if not 'username' in request.session['user']:
+			return request.redirect("/virtualkey/autologin")
+		
+		if not 'auto_login_hash' in request.session['user']:
+			return request.redirect("/virtualkey/autologin")
+		
 		_logger.info("SESSION DATA: %s" % request.session['user'])
 
 		# Há uma sessão válida com o navegador do cliente.
