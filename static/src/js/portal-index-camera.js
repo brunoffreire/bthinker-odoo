@@ -127,7 +127,7 @@ class VideoCamera {
     let previousImageURL = null;
 
     this.socket = new WebSocket(
-      `wss://dev.bthinker.com.br:8300/camera?guid=${this.guid}`
+      `wss://www.bthinker.com.br:8300/camera?guid=${this.guid}`
     );
     this.socket.binaryType = "arraybuffer";
 
